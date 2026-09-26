@@ -32,7 +32,7 @@ Trong học phần này, bài thực hành được nộp theo đúng cách các
 ## A. Thiết lập ban đầu (làm MỘT lần, trước Buổi 1, khoảng 15 phút)
 
 ### A1. Chuẩn bị
-- Tài khoản GitHub, **ảnh đại diện và tên hiển thị** đúng họ tên thật (để giảng viên nhận ra).
+- Tài khoản GitHub.
 - Đã cài Git, Node.js, VS Code (xem `README.md`).
 
 ### A2. Tạo repo riêng tư trên GitHub
@@ -65,7 +65,7 @@ Kiểm tra: `git remote -v` phải thấy cả `origin` (repo của bạn) và `
 Trên trang repo: **Settings → Collaborators → Add people** → nhập tài khoản GitHub của giảng viên: `<tài-khoản-GV>`.
 
 ### A5. Khai báo repo
-Điền link repo vào biểu mẫu giảng viên cung cấp: [Google ](https://docs.google.com/forms/d/e/1FAIpQLSdEjsJn2HUxLWmiFHy9alfB7wnAGQWvDtT3H-XGsZJRKpW5XQ/viewform?usp=publish-editor).
+Điền link repo vào biểu mẫu giảng viên cung cấp: [Google Form](https://docs.google.com/forms/d/e/1FAIpQLScXXrq7l6Xz1JY0ILXji3N11NEvmkvmODoGdhbxVi-Nw5kSJQ/viewform?usp=dialog).
 
 ### A6. Repo nhóm (chỉ Moderator của nhóm làm)
 > Chỉ làm khi đề bài một buổi nào đó yêu cầu bài nhóm. **Buổi 1 không cần.**
