@@ -1,0 +1,125 @@
+// MiniShop NTU - máy chủ web + REST API phục vụ thực hành Kiểm thử phần mềm (SOT357)
+// LƯU Ý: Đây là ứng dụng dạy học, CÓ CHỦ ĐÍCH chứa một số lỗi. Không dùng cho mục đích thực tế.
+const path = require('path');
+const crypto = require('crypto');
+const express = require('express');
+
+const store = require('./data/store');
+const { register } = require('./services/registration');
+const { login } = require('./services/auth');
+const cart = require('./services/cart');
+const { calcShippingFee } = require('./services/shipping');
+
+const app = express();
+app.use(express.json());
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+const sessions = {}; // token -> email
+
+function requireLogin(req, res, next) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : '';
+  const email = sessions[token];
+  if (!email) {
+    return res.status(401).json({ message: 'Bạn cần đăng nhập' });
+  }
+  req.user = store.findUser(email);
+  return next();
+}
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', app: 'MiniShop NTU', version: '1.0.0' });
+});
+
+app.get('/api/products', (req, res) => {
+  const delay = 100 + Math.floor(Math.random() * 1400);
+  setTimeout(() => res.json(store.products), delay);
+});
+
+app.post('/api/register', (req, res) => {
+  const result = register(req.body);
+  res.status(result.status).json(result);
+});
+
+app.post('/api/login', (req, res) => {
+  const { email, password } = req.body || {};
+  const result = login(email, password);
+  if (result.ok) {
+    const token = crypto.randomBytes(16).toString('hex');
+    sessions[token] = result.user.email;
+    return res.status(200).json({ ...result, token });
+  }
+  return res.status(result.status).json(result);
+});
+
+app.get('/api/cart', requireLogin, (req, res) => {
+  res.json(cart.cartDetail(req.user.email));
+});
+
+app.post('/api/cart', requireLogin, (req, res) => {
+  const { productId, qty } = req.body || {};
+  const result = cart.addToCart(req.user.email, productId, qty);
+  res.status(result.status).json(result);
+});
+
+app.delete('/api/cart/:productId', requireLogin, (req, res) => {
+  const result = cart.removeFromCart(req.user.email, req.params.productId);
+  res.status(result.status).json(result);
+});
+
+app.post('/api/shipping-fee', requireLogin, (req, res) => {
+  const { zone } = req.body || {};
+  const { subtotal } = cart.cartDetail(req.user.email);
+  try {
+    const fee = calcShippingFee({ subtotal, zone, customerType: req.user.type });
+    res.json({ subtotal, zone, shippingFee: fee, total: subtotal + fee });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+app.post('/api/orders', requireLogin, (req, res) => {
+  const { zone } = req.body || {};
+  const detail = cart.cartDetail(req.user.email);
+  if (detail.items.length === 0) {
+    return res.status(400).json({ message: 'Giỏ hàng đang trống' });
+  }
+  let fee;
+  try {
+    fee = calcShippingFee({ subtotal: detail.subtotal, zone, customerType: req.user.type });
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
+  const order = {
+    id: store.orders.length + 1,
+    email: req.user.email,
+    items: detail.items,
+    subtotal: detail.subtotal,
+    shippingFee: fee,
+    total: detail.subtotal + fee,
+    status: 'CHO_XAC_NHAN',
+  };
+  store.orders.push(order);
+  cart.clearCart(req.user.email);
+  return res.status(201).json(order);
+});
+
+app.get('/api/orders', requireLogin, (req, res) => {
+  res.json(store.orders.filter((o) => o.email === req.user.email));
+});
+
+app.delete('/api/orders/:id', requireLogin, (req, res) => {
+  const order = store.orders.find((o) => o.id === Number(req.params.id) && o.email === req.user.email);
+  order.status = 'DA_HUY';
+  res.json(order);
+});
+
+const PORT = Number(process.env.PORT) || 3000;
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`MiniShop NTU đang chạy tại http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

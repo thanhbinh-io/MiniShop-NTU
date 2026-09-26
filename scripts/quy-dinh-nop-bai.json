@@ -1,0 +1,24 @@
+{
+  "_ghiChu": "Quy định nộp bài theo từng nhánh. Tên nhánh = khóa. Giảng viên bổ sung mục mới cho các buổi sau.",
+  "buoi-01": {
+    "moTa": "Buổi 1 – Phần 1, 2, 3 (bài cá nhân)",
+    "duocSua": [
+      "bai-nop/Buoi01-Phan1-KhamPha.md",
+      "bai-nop/Buoi01-Phan2-BienBanReview.md",
+      "bai-nop/Buoi01-Phan3-PhanTichTinh.md",
+      "bai-nop/hinh/",
+      "src/lab-static/orderUtils.js"
+    ],
+    "batBuocDien": [
+      "bai-nop/Buoi01-Phan1-KhamPha.md",
+      "bai-nop/Buoi01-Phan2-BienBanReview.md",
+      "bai-nop/Buoi01-Phan3-PhanTichTinh.md"
+    ],
+    "lenhKiemTra": [
+      {
+        "ten": "ESLint Phần 3 (npm run lint:lab)",
+        "lenh": "npm run lint:lab"
+      }
+    ]
+  }
+}

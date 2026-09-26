@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MiniShop NTU</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>MiniShop NTU</h1>
+    <p class="sub">Cửa hàng quà lưu niệm (ứng dụng mẫu cho học phần Kiểm thử phần mềm)</p>
+    <div id="user-bar" data-testid="user-bar">Chưa đăng nhập</div>
+  </header>
+
+  <main>
+    <section class="card" id="register-section">
+      <h2>Đăng ký tài khoản</h2>
+      <label>Họ tên <input id="reg-name" data-testid="reg-name"></label>
+      <label>Email <input id="reg-email" data-testid="reg-email" type="text"></label>
+      <label>Tuổi <input id="reg-age" data-testid="reg-age" type="text"></label>
+      <label>Mật khẩu <input id="reg-password" data-testid="reg-password" type="password"></label>
+      <button id="btn-register" data-testid="btn-register">Đăng ký</button>
+      <div class="msg" id="reg-msg" data-testid="reg-msg" role="status"></div>
+    </section>
+
+    <section class="card" id="login-section">
+      <h2>Đăng nhập</h2>
+      <label>Email <input id="login-email" data-testid="login-email" type="text"></label>
+      <label>Mật khẩu <input id="login-password" data-testid="login-password" type="password"></label>
+      <button id="btn-login" data-testid="btn-login">Đăng nhập</button>
+      <div class="msg" id="login-msg" data-testid="login-msg" role="status"></div>
+      <p class="hint">Tài khoản mẫu: sv@ntu.edu.vn / Matkhau123 (thường), vip@ntu.edu.vn / Matkhau123 (VIP)</p>
+    </section>
+
+    <section class="card wide" id="product-section">
+      <h2>Sản phẩm</h2>
+      <div id="product-list" data-testid="product-list">Đang tải...</div>
+    </section>
+
+    <section class="card wide" id="cart-section">
+      <h2>Giỏ hàng</h2>
+      <div id="cart" data-testid="cart">Hãy đăng nhập để dùng giỏ hàng.</div>
+      <label>Khu vực giao hàng
+        <select id="zone" data-testid="zone">
+          <option value="noi-thanh">Nội thành</option>
+          <option value="ngoai-thanh">Ngoại thành</option>
+        </select>
+      </label>
+      <button id="btn-fee" data-testid="btn-fee">Tính phí vận chuyển</button>
+      <button id="btn-order" data-testid="btn-order">Đặt hàng</button>
+      <div class="msg" id="fee-msg" data-testid="fee-msg" role="status"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
