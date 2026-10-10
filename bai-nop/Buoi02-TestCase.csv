@@ -1,2 +1,37 @@
-﻿MaCa,YeuCau,KyThuat,MucTieu,TienDieuKien,DuLieuVao,KetQuaMongDoi,DoUuTien
-TC-00000000-00,FR-01.3,BVA,VÍ DỤ MẪU - XÓA DÒNG NÀY TRƯỚC KHI NỘP,"Chưa đăng nhập, đang ở màn hình Đăng ký",hoTen=Nguyen Van A; email=vd01@ntu.edu.vn; tuoi=18; matKhau=Matkhau123,"Tạo tài khoản thành công; hiển thị thông báo ""Đăng ký thành công""",Cao
+MaCa,YeuCau,KyThuat,MucTieu,TienDieuKien,DuLieuVao,KetQuaMongDoi,DoUuTien
+TC-65130239-01,FR-01.3,BVA,Tuổi 17 (dưới biên dưới) bị từ chối,TD1,tuoi=17,"Không tạo tài khoản; báo lỗi ""Tuổi phải từ 18 đến 100""",Cao
+TC-65130239-02,FR-01.3,BVA,Tuổi 18 (đúng biên dưới) được chấp nhận,TD1,tuoi=18,"Tạo tài khoản thành công; hiển thị ""Đăng ký thành công""",Cao
+TC-65130239-03,FR-01.3,BVA,Tuổi 100 (đúng biên trên) được chấp nhận,TD1,tuoi=100,"Tạo tài khoản thành công; hiển thị ""Đăng ký thành công""",TrungBinh
+TC-65130239-04,FR-01.3,BVA,Tuổi 101 (trên biên trên) bị từ chối,TD1,tuoi=101,"Không tạo tài khoản; báo lỗi ""Tuổi phải từ 18 đến 100""",TrungBinh
+TC-65130239-05,FR-01.3,EP,Tuổi không phải số nguyên bị từ chối,TD1,tuoi=55.5,Không tạo tài khoản; báo lỗi tuổi không hợp lệ,Thap
+TC-65130239-06,FR-01.4,EP,"Mật khẩu có độ dài hợp lệ và đủ chữ cái, chữ số được chấp nhận",TD1,matKhau=Matkhau123,"Tạo tài khoản thành công; hiển thị ""Đăng ký thành công""",Cao
+TC-65130239-07,FR-01.4,BVA,Mật khẩu 7 ký tự (dưới biên dưới) bị từ chối,TD1,matKhau=Abcde12,"Không tạo tài khoản; báo lỗi ""Mật khẩu phải từ 8 đến 20 ký tự""",Cao
+TC-65130239-08,FR-01.4,BVA,Mật khẩu 8 ký tự (đúng biên dưới) được chấp nhận,TD1,matKhau=Abcdef12,"Tạo tài khoản thành công; hiển thị ""Đăng ký thành công""",Cao
+TC-65130239-09,FR-01.4,BVA,Mật khẩu 20 ký tự (đúng biên trên) được chấp nhận,TD1,matKhau=Abcdefghijklmnop1234,"Tạo tài khoản thành công; hiển thị ""Đăng ký thành công""",TrungBinh
+TC-65130239-10,FR-01.4,BVA,Mật khẩu 21 ký tự (trên biên trên) bị từ chối,TD1,matKhau=Abcdefghijklmnopq1234,"Không tạo tài khoản; báo lỗi ""Mật khẩu phải từ 8 đến 20 ký tự""",TrungBinh
+TC-65130239-11,FR-01.4,EP,"Mật khẩu chỉ có chữ cái, không có chữ số bị từ chối",TD1,matKhau=Matkhauab,"Không tạo tài khoản; báo lỗi ""Mật khẩu phải chứa ít nhất một chữ cái và một chữ số""",Cao
+TC-65130239-12,FR-01.4,EP,"Mật khẩu chỉ có chữ số, không có chữ cái bị từ chối",TD1,matKhau=12345678,"Không tạo tài khoản; báo lỗi ""Mật khẩu phải chứa ít nhất một chữ cái và một chữ số""",TrungBinh
+TC-65130239-13,FR-03.2,BVA,Số lượng 0 bị từ chối,TD2,soLuong=0,Không thêm vào giỏ; hiển thị thông báo lỗi,Cao
+TC-65130239-14,FR-03.2,BVA,Số lượng 1 đúng biên dưới,TD2,soLuong=1,Thêm sản phẩm thành công với số lượng 1,Cao
+TC-65130239-15,FR-03.2,BVA,Số lượng 99 đúng biên trên,TD2,soLuong=99,Thêm sản phẩm thành công với số lượng 99,TrungBinh
+TC-65130239-16,FR-03.2,BVA,Số lượng 100 vượt mức bị từ chối,TD2,soLuong=100,Không thêm vào giỏ; hiển thị thông báo lỗi,TrungBinh
+TC-65130239-17,FR-03.2,EP,Số lượng không phải số nguyên bị từ chối,TD2,soLuong=1.5,Không thêm vào giỏ; hiển thị thông báo lỗi,Thap
+TC-65130239-18,FR-03.4,EP,Tổng số lượng giỏ 50 hợp lệ,TD2,soLuong=50,Hệ thống chấp nhận; giỏ hàng cập nhật thành công,TrungBinh
+TC-65130239-19,FR-03.4,BVA,Tổng số lượng giỏ đạt đúng 200,TD2,SP1=99; SP2=99; SP3=2,Hệ thống chấp nhận; Giỏ hàng cập nhật thành công; tổng số lượng = 200,TrungBinh
+TC-65130239-20,FR-03.4,BVA,Tổng số lượng giỏ 201 vượt trần bị từ chối,TD2,SP1=99; SP2=99; SP3=3,Không thêm vào giỏ; hiển thị thông báo lỗi,Cao
+TC-65130239-21,FR-04.1,DT,Thành viên thường mua ở nội thành phí bình thường,TD2,khuVuc=noi-thanh,"Tạm tính: 300.000đ, Giảm giá: 0đ, Phí vận chuyển: 20.000đ, Tổng tiền: 320.000đ",Cao
+TC-65130239-22,FR-04.1,DT,Thành viên thường mua ở ngoại thành phí bình thường,TD2,khuVuc=ngoai-thanh,"Tạm tính: 300.000đ, Giảm giá: 0đ, Phí vận chuyển: 35.000đ, Tổng tiền: 335.000đ",Cao
+TC-65130239-23,FR-04.2,DT,Thành viên thường mua đơn từ 500k nội thành được miễn phí ship,TD2,khuVuc=noi-thanh,"Tạm tính: 500.000đ, Giảm giá: 0đ, Phí vận chuyển: 0đ, Tổng tiền: 500.000đ",Cao
+TC-65130239-24,FR-04.2,DT,Thành viên thường mua đơn từ 500k ngoại thành được miễn phí ship,TD2,khuVuc=ngoai-thanh,"Tạm tính: 600.000đ, Giảm giá: 0đ, Phí vận chuyển: 0đ, Tổng tiền: 600.000đ",Cao
+TC-65130239-25,FR-04.3,DT,Thành viên VIP mua nội thành được miễn phí ship và giảm 5%,TD3,khuVuc=noi-thanh,"Tạm tính: 400.000đ, Giảm giá: 20.000đ, Phí vận chuyển: 0đ, Tổng tiền: 380.000đ",Cao
+TC-65130239-26,FR-04.3,DT,Thành viên VIP mua ngoại thành được miễn phí ship và giảm 5%,TD3,khuVuc=ngoai-thanh,"Tạm tính: 400.000đ, Giảm giá: 20.000đ, Phí vận chuyển: 0đ, Tổng tiền: 380.000đ",Cao
+TC-65130239-27,FR-05.3,DT,Thành viên VIP mua đơn lớn xét miễn phí ship theo tạm tính trước giảm giá,TD3,khuVuc=ngoai-thanh,"Tạm tính: 550.000đ, Giảm giá: 27.500đ, Phí vận chuyển: 0đ, Tổng tiền: 522.500đ",TrungBinh
+TC-65130239-28,FR-05.2,DT,Thành viên thường mua dưới 500k ngoại thành,TD2,khuVuc=ngoai-thanh,"Tạm tính: 200.000đ, Giảm giá: 0đ, Phí vận chuyển: 35.000đ, Tổng tiền: 235.000đ",TrungBinh
+TC-65130239-29,FR-02.1,ST,Đăng nhập thành công với thông tin đúng,TD4,email=sv@ntu.edu.vn; matKhau=Matkhau123,Đăng nhập thành công vào trang chủ,Cao
+TC-65130239-30,FR-02.2,ST,Đăng nhập thất bại với mật khẩu sai (lần 1),TD4,email=sv@ntu.edu.vn; matKhau=SaiMatKhau,"Hiển thị thông báo ""Sai email hoặc mật khẩu""",Cao
+TC-65130239-31,FR-02.3,ST,Sai mật khẩu lần 2 liên tiếp,TD4,Thực hiện sai lần 1 rồi sai lần 2,"Hiển thị thông báo ""Sai email hoặc mật khẩu"", bộ đếm sai = 2",Cao
+TC-65130239-32,FR-02.3,ST,Sai mật khẩu lần 3 liên tiếp tài khoản bị khóa 15 phút,TD4,Thực hiện sai liên tiếp 3 lần,"Hiển thị thông báo khóa tài khoản ""Tài khoản đã bị khóa, vui lòng thử lại sau 15 phút""",Cao
+TC-65130239-33,FR-02.3,ST,Đăng nhập đúng khi đã sai trước đó giúp reset bộ đếm về 0,TD4,Sai 1 lần → matKhau=Matkhau123,Đăng nhập thành công vào trang chủ; bộ đếm đặt lại về 0,Cao
+TC-65130239-34,FR-02.4,ST,Tự động mở khóa tài khoản sau khi hết 15 phút,TD5,Chờ hết 15 phút,Tài khoản tự động chuyển về trạng thái Hoạt động (S1); bộ đếm đặt lại về 0,Cao
+TC-65130239-35,FR-02.4,ST,Đăng nhập đúng mật khẩu trong lúc tài khoản đang bị khóa bị từ chối,TD5,email=sv@ntu.edu.vn; matKhau=Matkhau123,"Từ chối đăng nhập; hiển thị ""Tài khoản đã bị khóa, vui lòng thử lại sau 15 phút""",Cao
+TC-65130239-36,FR-02.4,ST,Đăng nhập sai mật khẩu trong lúc tài khoản đang bị khóa vẫn bị từ chối,TD5,email=sv@ntu.edu.vn; matKhau=SaiPass,"Từ chối đăng nhập; hiển thị ""Tài khoản đã bị khóa, vui lòng thử lại sau 15 phút""",TrungBinh
