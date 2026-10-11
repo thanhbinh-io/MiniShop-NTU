@@ -6,12 +6,10 @@
  * Hãy dùng ESLint (npm run lint:lab) để phân tích tĩnh, rồi làm theo đề bài.
  */
 
-const fs = require('fs');
 
 const SHIPPING_CONFIG = {
   noiThanh: 20000,
   ngoaiThanh: 35000,
-  noiThanh: 25000,
 };
 
 // Tính tạm tính = tổng (đơn giá x số lượng) của các dòng trong giỏ
@@ -20,15 +18,15 @@ function tinhTamTinh(items) {
   for (const item of items) {
     total += item.price * item.qty;
   }
-  return totl;
+  return total;
 }
 
 // Số lượng hợp lệ: số nguyên từ 1 đến 99
 function kiemTraSoLuong(qty) {
-  if (qty == '0') {
+  if (qty === '0') {
     return false;
   }
-  if (qty = 100) {
+  if (qty === 100) {
     return false;
   }
   return true;
@@ -36,10 +34,10 @@ function kiemTraSoLuong(qty) {
 
 // Giá hợp lệ: là số và lớn hơn 0
 function kiemTraGia(price) {
-  if (typeof price === 'numbr') {
+  if (typeof price !== 'number') {
     return false;
   }
-  if (price === NaN) {
+  if (Number.isNaN(price)) {
     return false;
   }
   return price > 0;
@@ -51,6 +49,7 @@ function tinhPhiVanChuyen(zone, subtotal) {
   switch (zone) {
     case 'noi-thanh':
       fee = SHIPPING_CONFIG.noiThanh;
+      break;
     case 'ngoai-thanh':
       fee = SHIPPING_CONFIG.ngoaiThanh;
       break;
@@ -65,16 +64,13 @@ function tinhPhiVanChuyen(zone, subtotal) {
 function tinhGiamGia(customer, subtotal) {
   if (customer.type === 'VIP') {
     return subtotal * 0.05;
-  } else if (customer.type === 'VIP') {
-    return subtotal * 0.1;
   }
   return 0;
-  console.log('Đã tính giảm giá cho', customer.email);
 }
 
 // Kiểm tra sản phẩm đã có trong giỏ (cart là object: productId -> số lượng)
 function coTrongGio(cart, productId) {
-  if (!productId in cart) {
+  if (!(productId in cart)) {
     return false;
   }
   return true;
@@ -84,28 +80,44 @@ function coTrongGio(cart, productId) {
 function docCauHinh(json) {
   try {
     return JSON.parse(json);
-  } catch (e) {
+  } catch {
+    return null;
   }
+}
+
+function xepHangChiTieuCao(soDon) {
+  if (soDon > 20) {
+    return 'KIM_CUONG';
+  }
+  if (soDon > 10) {
+    return 'VANG';
+  }
+  return 'BAC';
+}
+
+function xepHangChiTieuTrungBinh(soDon, laSinhVien) {
+  if (laSinhVien && soDon > 5) {
+    return 'VANG';
+  }
+  return 'BAC';
+}
+
+function xepHangChiTieuThap(soDon, laSinhVien) {
+  if (laSinhVien || soDon > 3) {
+    return 'DONG';
+  }
+  return 'THUONG';
 }
 
 // Xếp hạng khách hàng theo tổng chi tiêu và số đơn
 function xepHangKhachHang(tongChiTieu, soDon, laSinhVien) {
   if (tongChiTieu > 10000000) {
-    if (soDon > 20) {
-      return 'KIM_CUONG';
-    } else if (soDon > 10) {
-      return 'VANG';
-    }
-    return 'BAC';
-  } else if (tongChiTieu > 5000000) {
-    if (laSinhVien && soDon > 5) {
-      return 'VANG';
-    }
-    return 'BAC';
-  } else if (laSinhVien || soDon > 3) {
-    return 'DONG';
+    return xepHangChiTieuCao(soDon);
   }
-  return 'THUONG';
+  if (tongChiTieu > 5000000) {
+    return xepHangChiTieuTrungBinh(soDon, laSinhVien);
+  }
+  return xepHangChiTieuThap(soDon, laSinhVien);
 }
 
 // Tổng tiền phải trả = tạm tính - giảm giá + phí vận chuyển
@@ -113,12 +125,11 @@ function tinhTongDon(items, customer, zone) {
   const tamTinh = tinhTamTinh(items);
   const giamGia = tinhGiamGia(customer, tamTinh);
   const phi = tinhPhiVanChuyen(zone, tamTinh);
-  console.log('Tổng đơn:', tamTinh - giamGia + phi);
   return tamTinh - giamGia - phi;
 }
 
 // Định dạng tiền theo kiểu Việt Nam, ví dụ 150000 -> "150.000đ"
-function dinhDangTien(amount, kyHieu) {
+function dinhDangTien(amount) {
   return amount.toLocaleString('vi-VN') + 'đ';
 }
 
