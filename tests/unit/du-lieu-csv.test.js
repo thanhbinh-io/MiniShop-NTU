@@ -25,21 +25,19 @@ describe('validateRegistration - dữ liệu từ Buoi02-DuLieuKiemThu.csv', () 
 describe('validateQuantity - dữ liệu từ Buoi02-DuLieuKiemThu.csv', () => {
   const duLieu = docDuLieuKiemThu('validateQuantity');
 
-  // TODO (1): viết test.each tương tự khối ở trên.
-  //   - validateQuantity nhận MỘT tham số là số lượng: validateQuantity(thamSo.qty)
-  //   - Hàm trả về true/false, cần quy đổi sang 'HOP_LE' / 'KHONG_HOP_LE' trước khi so sánh.
-  test('TODO: thay khối này bằng test.each cho validateQuantity', () => {
-    expect(duLieu.length).toBeGreaterThan(0);
+  test.each(duLieu)('$maCa: $ketQuaKyVong', ({ thamSo, ketQuaKyVong }) => {
+    const hopLe = validateQuantity(thamSo.qty ?? thamSo.quantity);
+    const thucTe = hopLe ? 'HOP_LE' : 'KHONG_HOP_LE';
+    expect(thucTe).toBe(ketQuaKyVong);
   });
 });
 
 describe('calcShippingFee - dữ liệu từ Buoi02-DuLieuKiemThu.csv', () => {
   const duLieu = docDuLieuKiemThu('calcShippingFee');
 
-  // TODO (2): viết test.each cho calcShippingFee.
-  //   - Hàm nhận MỘT đối tượng: calcShippingFee(thamSo)
-  //   - Kết quả mong đợi trong CSV là chuỗi, phải đổi sang số: Number(ketQuaKyVong)
-  test('TODO: thay khối này bằng test.each cho calcShippingFee', () => {
-    expect(duLieu.length).toBeGreaterThan(0);
+  test.each(duLieu)('$maCa: $ketQuaKyVong', ({ thamSo, ketQuaKyVong }) => {
+    const thucTe = calcShippingFee(thamSo);
+    expect(thucTe).toBe(Number(ketQuaKyVong));
   });
 });
+

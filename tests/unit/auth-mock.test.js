@@ -38,10 +38,45 @@ describe('login - nghiệp vụ khóa tài khoản', () => {
     expect(kq.user.email).toBe('sv@ntu.edu.vn');
   });
 
-  // TODO (5): viết thêm ít nhất 4 ca, bám theo bộ ca ST đã thiết kế ở Buổi 2:
-  //   - email không tồn tại
-  //   - sai mật khẩu 2 lần: tài khoản chưa bị khóa
-  //   - sai mật khẩu MAX_FAILED_ATTEMPTS lần liên tiếp: nguoiDung.locked === true
-  //   - đăng nhập đúng sau 2 lần sai: nguoiDung.failedAttempts trở về 0  (FR-02.3)
-  //   - tài khoản đang bị khóa, nhập ĐÚNG mật khẩu: vẫn bị từ chối, thông báo nói rõ bị khóa (FR-02.4)
+  test('email không tồn tại thì báo sai email hoặc mật khẩu', () => {
+    const kq = login('khongtontai@ntu.edu.vn', 'Matkhau123');
+    expect(kq.ok).toBe(false);
+    expect(kq.status).toBe(401);
+    expect(kq.message).toBe('Sai email hoặc mật khẩu');
+  });
+
+  test('sai mật khẩu 2 lần thì tài khoản chưa bị khóa', () => {
+    login('sv@ntu.edu.vn', 'saimatkhau');
+    const kq = login('sv@ntu.edu.vn', 'saimatkhau');
+    expect(kq.ok).toBe(false);
+    expect(kq.status).toBe(401);
+    expect(nguoiDung.failedAttempts).toBe(2);
+    expect(nguoiDung.locked).toBe(false);
+  });
+
+  test('sai mật khẩu MAX_FAILED_ATTEMPTS lần liên tiếp thì tài khoản bị khóa', () => {
+    login('sv@ntu.edu.vn', 'sai1');
+    login('sv@ntu.edu.vn', 'sai2');
+    const kq = login('sv@ntu.edu.vn', 'sai3');
+    expect(kq.ok).toBe(false);
+    expect(kq.status).toBe(423);
+    expect(kq.message).toBe('Tài khoản đã bị khóa');
+    expect(nguoiDung.locked).toBe(true);
+    expect(nguoiDung.failedAttempts).toBe(MAX_FAILED_ATTEMPTS);
+  });
+
+  test('đăng nhập đúng sau 2 lần sai thì bộ đếm về 0 (FR-02.3)', () => {
+    login('sv@ntu.edu.vn', 'sai1');
+    login('sv@ntu.edu.vn', 'sai2');
+    const kq = login('sv@ntu.edu.vn', 'Matkhau123');
+    expect(kq.ok).toBe(true);
+    expect(nguoiDung.failedAttempts).toBe(0);
+  });
+
+  test('tài khoản đang bị khóa, nhập đúng mật khẩu vẫn bị từ chối kèm thông báo khóa (FR-02.4)', () => {
+    nguoiDung.locked = true;
+    const kq = login('sv@ntu.edu.vn', 'Matkhau123');
+    expect(kq.ok).toBe(false);
+    expect(kq.message).toBe('Tài khoản đã bị khóa, vui lòng thử lại sau 15 phút');
+  });
 });

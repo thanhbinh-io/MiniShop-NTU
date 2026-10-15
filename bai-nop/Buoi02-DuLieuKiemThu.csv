@@ -1,2 +1,26 @@
 ﻿MaCa,Ham,ThamSo,KetQuaKyVong
-TC-00000000-00,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""vd01@ntu.edu.vn"",""age"":18,""password"":""Matkhau123""}",HOP_LE
+TC-65130239-01,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc01@ntu.edu.vn"",""age"":17,""password"":""Matkhau123""}",KHONG_HOP_LE
+TC-65130239-02,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc02@ntu.edu.vn"",""age"":18,""password"":""Matkhau123""}",HOP_LE
+TC-65130239-03,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc03@ntu.edu.vn"",""age"":100,""password"":""Matkhau123""}",HOP_LE
+TC-65130239-04,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc04@ntu.edu.vn"",""age"":101,""password"":""Matkhau123""}",KHONG_HOP_LE
+TC-65130239-05,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc05@ntu.edu.vn"",""age"":55.5,""password"":""Matkhau123""}",KHONG_HOP_LE
+TC-65130239-06,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc06@ntu.edu.vn"",""age"":25,""password"":""Matkhau123""}",HOP_LE
+TC-65130239-07,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc07@ntu.edu.vn"",""age"":25,""password"":""Abcde12""}",KHONG_HOP_LE
+TC-65130239-08,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc08@ntu.edu.vn"",""age"":25,""password"":""Abcdef12""}",HOP_LE
+TC-65130239-09,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc09@ntu.edu.vn"",""age"":25,""password"":""Abcdefghijklmnop1234""}",HOP_LE
+TC-65130239-10,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc10@ntu.edu.vn"",""age"":25,""password"":""Abcdefghijklmnopq1234""}",KHONG_HOP_LE
+TC-65130239-11,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc11@ntu.edu.vn"",""age"":25,""password"":""Matkhauab""}",KHONG_HOP_LE
+TC-65130239-12,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc12@ntu.edu.vn"",""age"":25,""password"":""12345678""}",KHONG_HOP_LE
+TC-65130239-13,validateQuantity,"{""quantity"":0}",KHONG_HOP_LE
+TC-65130239-14,validateQuantity,"{""quantity"":1}",HOP_LE
+TC-65130239-15,validateQuantity,"{""quantity"":99}",HOP_LE
+TC-65130239-16,validateQuantity,"{""quantity"":100}",KHONG_HOP_LE
+TC-65130239-17,validateQuantity,"{""quantity"":1.5}",KHONG_HOP_LE
+TC-65130239-21,calcShippingFee,"{""subtotal"":300000,""zone"":""noi-thanh"",""customerType"":""THUONG""}",20000
+TC-65130239-22,calcShippingFee,"{""subtotal"":300000,""zone"":""ngoai-thanh"",""customerType"":""THUONG""}",35000
+TC-65130239-23,calcShippingFee,"{""subtotal"":500000,""zone"":""noi-thanh"",""customerType"":""THUONG""}",0
+TC-65130239-24,calcShippingFee,"{""subtotal"":600000,""zone"":""ngoai-thanh"",""customerType"":""THUONG""}",0
+TC-65130239-25,calcShippingFee,"{""subtotal"":400000,""zone"":""noi-thanh"",""customerType"":""VIP""}",0
+TC-65130239-26,calcShippingFee,"{""subtotal"":400000,""zone"":""ngoai-thanh"",""customerType"":""VIP""}",0
+TC-65130239-27,calcShippingFee,"{""subtotal"":550000,""zone"":""ngoai-thanh"",""customerType"":""VIP""}",0
+TC-65130239-28,calcShippingFee,"{""subtotal"":200000,""zone"":""ngoai-thanh"",""customerType"":""THUONG""}",35000

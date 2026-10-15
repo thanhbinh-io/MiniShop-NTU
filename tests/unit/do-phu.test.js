@@ -17,8 +17,19 @@ describe('calcShippingFee - các nhánh ngoại lệ', () => {
       .toThrow('Khu vực giao hàng không hợp lệ');
   });
 
-  // TODO (3): bổ sung các ca cho những nhánh còn lại của calcShippingFee.
-  //   Gợi ý: đọc mã nguồn, mỗi câu lệnh if là một nhánh cần phủ cả hai chiều.
+  test('gọi hàm không truyền tham số thì ném lỗi khu vực không hợp lệ', () => {
+    expect(() => calcShippingFee()).toThrow('Khu vực giao hàng không hợp lệ');
+  });
+
+  test('giá trị đơn hàng không phải là số thì ném lỗi', () => {
+    expect(() => calcShippingFee({ subtotal: 'khong-phai-so', zone: 'noi-thanh', customerType: 'THUONG' }))
+      .toThrow('Giá trị đơn hàng không hợp lệ');
+  });
+
+  test('giá trị đơn hàng âm thì ném lỗi', () => {
+    expect(() => calcShippingFee({ subtotal: -10000, zone: 'noi-thanh', customerType: 'THUONG' }))
+      .toThrow('Giá trị đơn hàng không hợp lệ');
+  });
 });
 
 describe('cart - các nhánh của nghiệp vụ giỏ hàng', () => {
@@ -35,8 +46,47 @@ describe('cart - các nhánh của nghiệp vụ giỏ hàng', () => {
     expect(kq.cart.items).toHaveLength(1);
   });
 
-  // TODO (4): viết các ca phủ hết nhánh còn lại của cart.js.
-  //   Các hàm cần chạm tới: validateQuantity, cartDetail, addToCart, removeFromCart
-  //   Lưu ý: có nhánh chỉ chạy khi thêm sản phẩm KHÔNG tồn tại, và có nhánh chỉ chạy
-  //   với một email chưa từng có giỏ hàng.
+  test('lấy giỏ hàng cho email chưa từng có giỏ hàng', () => {
+    const emailMoi = 'chua-co-gio@ntu.edu.vn';
+    const detail = cart.cartDetail(emailMoi);
+    expect(detail.items).toHaveLength(0);
+    expect(detail.subtotal).toBe(0);
+  });
+
+  test('thêm sản phẩm với số lượng không hợp lệ', () => {
+    const kq = cart.addToCart(EMAIL, 1, -1);
+    expect(kq.ok).toBe(false);
+    expect(kq.status).toBe(400);
+    expect(kq.message).toBe('Số lượng phải là số nguyên từ 1 đến 99');
+  });
+
+  test('cập nhật số lượng khi sản phẩm đã có sẵn trong giỏ', () => {
+    cart.addToCart(EMAIL, 1, 2);
+    const kq = cart.addToCart(EMAIL, 1, 5);
+    expect(kq.ok).toBe(true);
+    expect(kq.cart.items).toHaveLength(1);
+    expect(kq.cart.items[0].qty).toBe(5);
+  });
+
+  test('xem chi tiết giỏ khi sản phẩm không tồn tại trong danh mục', () => {
+    const kq = cart.addToCart(EMAIL, 9999, 1);
+    expect(kq.ok).toBe(true);
+    expect(kq.cart.items[0].name).toBe('(không xác định)');
+    expect(kq.cart.items[0].price).toBe(0);
+  });
+
+  test('xóa sản phẩm không có trong giỏ', () => {
+    const kq = cart.removeFromCart(EMAIL, 999);
+    expect(kq.ok).toBe(false);
+    expect(kq.status).toBe(404);
+    expect(kq.message).toBe('Sản phẩm không có trong giỏ');
+  });
+
+  test('xóa sản phẩm có sẵn trong giỏ thành công', () => {
+    cart.addToCart(EMAIL, 1, 2);
+    const kq = cart.removeFromCart(EMAIL, 1);
+    expect(kq.ok).toBe(true);
+    expect(kq.status).toBe(200);
+    expect(kq.cart.items).toHaveLength(0);
+  });
 });
