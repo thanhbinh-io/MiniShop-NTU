@@ -57,7 +57,7 @@ Nếu chỉ chạy các ca kiểm thử với email chưa từng có giỏ hàng
 
 - **Không thể kết luận hàm này không còn lỗi.**
 - **Giải thích:**
-  1. *Lỗi bỏ sót yêu cầu (Omission of requirements):* Bao phủ nhánh 100% chỉ chứng minh mọi nhánh rẽ hiện có trong mã nguồn đã được chạy qua, nhưng không chứng minh mã nguồn đã hiện thực đầy đủ mọi yêu cầu nghiệp vụ theo SRS v1.1. Nếu lập trình viên quên viết một quy tắc hoặc điều kiện nghiệp vụ, kiểm thử hộp trắng không thể phát hiện nhánh bị thiếu đó.
+  1. *Lỗi bỏ sót yêu cầu :* Bao phủ nhánh 100% chỉ chứng minh mọi nhánh rẽ hiện có trong mã nguồn đã được chạy qua, nhưng không chứng minh mã nguồn đã hiện thực đầy đủ mọi yêu cầu nghiệp vụ theo SRS v1.1. Nếu lập trình viên quên viết một quy tắc hoặc điều kiện nghiệp vụ, kiểm thử hộp trắng không thể phát hiện nhánh bị thiếu đó.
   2. *Bộ ca kiểm thử có thể giả định sai kết quả:* Nếu kiểm thử viên thiết kế kết quả mong đợi theo hành vi sai của mã nguồn thay vì theo SRS, các ca kiểm thử vẫn "xanh" và đạt 100% nhánh nhưng thực chất hệ thống vẫn bị lỗi nghiệp vụ.
   3. *Lỗi phối hợp dữ liệu và tương tác:* Hàm có thể chạy đúng khi gọi đơn lẻ nhưng gặp lỗi khi tích hợp với các dịch vụ khác (như giỏ hàng, đặt hàng), hoặc lỗi xử lý số thực / số lớn ngoài các giá trị biên đã kiểm thử.
 
