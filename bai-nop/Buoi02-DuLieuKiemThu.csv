@@ -1,4 +1,4 @@
-﻿MaCa,Ham,ThamSo,KetQuaKyVong
+MaCa,Ham,ThamSo,KetQuaKyVong
 TC-65130239-01,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc01@ntu.edu.vn"",""age"":17,""password"":""Matkhau123""}",KHONG_HOP_LE
 TC-65130239-02,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc02@ntu.edu.vn"",""age"":18,""password"":""Matkhau123""}",HOP_LE
 TC-65130239-03,validateRegistration,"{""fullName"":""Nguyen Van A"",""email"":""tc03@ntu.edu.vn"",""age"":100,""password"":""Matkhau123""}",HOP_LE

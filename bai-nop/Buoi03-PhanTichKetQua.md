@@ -59,8 +59,5 @@ Khi chuyển bộ ca sang mã Jest, có ca nào phải sửa lại không?
 
 | Mã ca | Vấn đề gặp phải khi chuyển thành mã | Đã sửa như thế nào |
 |---|---|---|
-| Không có | Bộ dữ liệu ở Buổi 2 đã thiết kế đầu vào dưới dạng JSON chuẩn và kết quả mong đợi chuẩn hóa (`HOP_LE`/`KHONG_HOP_LE`, số tiền phí vận chuyển), khớp chính xác với SRS v1.1 | Giữ nguyên toàn bộ ca trong file CSV; xử lý chuyển đổi kiểu dữ liệu (chuỗi sang số, boolean sang nhãn hợp lệ) trực tiếp trong file kiểm thử Jest |
+| Không có | Bộ dữ liệu ở Buổi 2 đã thiết kế chuẩn | Giữ nguyên toàn bộ ca trong file CSV; xử lý tương thích thuộc tính tham số (dùng `thamSo.qty ?? thamSo.quantity`) và chuyển đổi kiểu dữ liệu trực tiếp trong file kiểm thử Jest |
 
-Nếu không phải sửa ca nào, ghi rõ "không có" và nêu lý do bộ ca đã đủ rõ.
-
-- **Lý do:** Bộ ca thiết kế ở Buổi 2 trong file `Buoi02-DuLieuKiemThu.csv` đã định lượng rõ ràng dữ liệu đầu vào dưới dạng JSON hợp lệ, kết quả mong đợi được chuẩn hóa thành các hằng số rõ ràng (`HOP_LE`, `KHONG_HOP_LE`, số nguyên phí vận chuyển), bám sát từng quy tắc trong SRS v1.1 nên khi ánh xạ sang cú pháp `test.each` của Jest không phát sinh hiểu nhầm hay phải điều chỉnh kết quả mong đợi.
