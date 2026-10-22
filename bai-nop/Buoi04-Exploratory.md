@@ -37,11 +37,18 @@ Ghi theo dòng thời gian, kể cả những thử nghiệm không phát hiện
 
 ### 1.3. Phát hiện
 
-| # | Hiện tượng | Có tái hiện được không | Mức nghiêm trọng dự kiến | Đã báo thành issue |
-|---|---|---|---|---|
-| 1 | Mật khẩu hợp lệ đúng 8 ký tự (`Abcdef12`) bị từ chối đăng ký với thông báo "Mật khẩu phải có từ 8 đến 20 ký tự" do điều kiện biên viết nhầm `<= 8` | Có tái hiện được (100%) | High | Đã báo (Issue #1) |
-| 2 | Tổng tiền đơn hàng (`total`) trên API `/api/orders` bị tính thiếu phí vận chuyển (`subtotal - discount` thay vì `subtotal - discount + fee`), làm sai lệch tiền thanh toán COD | Có tái hiện được (100%) | Critical | Đã báo (Issue #2) |
-| 3 | Sắp xếp sản phẩm theo tiêu chí "Giá giảm" (`gia-giam`) trên API `/api/products` và giao diện thực tế lại sắp xếp giá tăng dần | Có tái hiện được (100%) | Medium | Đã báo (Issue #3) |
+**Kết quả trong phạm vi Charter CT-05:**
+- Trong 25 phút thực hiện phiên thăm dò bám sát charter CT-05 (luồng đăng nhập, chuỗi đúng/sai xen kẽ, cơ chế khóa và tự mở khóa), hệ thống MiniShop v1.1.0 hoạt động chính xác theo đặc tả SRS v1.2 (FR-02.3, FR-02.4), **không phát sinh khiếm khuyết mới trong phạm vi charter**.
+- Các nghi vấn kỹ thuật phát sinh liên quan (như hằng số thời gian khóa mock 15s) được ghi nhận đúng quy tắc vào Mục 1.4 "Câu hỏi còn bỏ ngỏ".
+
+**Danh mục các lỗi nghiêm trọng phát hiện trong đợt kiểm thử hôm nay (chuyển sang tạo Issue ở Mục 2):**  
+Theo yêu cầu của đề bài (tạo ít nhất 2 issue từ bất kỳ hoạt động nào: xác nhận, hồi quy, hoặc thăm dò), các lỗi nghiêm trọng nhất phát hiện trong buổi kiểm thử được tổng hợp dưới đây:
+
+| # | Hiện tượng | Nguồn phát hiện | Có tái hiện được không | Mức nghiêm trọng dự kiến | Đã báo thành issue |
+|---|---|---|---|---|---|
+| 1 | Mật khẩu hợp lệ đúng 8 ký tự (`Abcdef12`) bị từ chối đăng ký với thông báo "Mật khẩu phải có từ 8 đến 20 ký tự" do điều kiện biên viết nhầm `<= 8` | Kiểm thử hồi quy (`TC-65130239-08`) | Có tái hiện được (100%) | High | Đã báo (Issue #1) |
+| 2 | Tổng tiền đơn hàng (`total`) trên API `/api/orders` bị tính thiếu phí vận chuyển (`subtotal - discount` thay vì `subtotal - discount + fee`), làm sai lệch tiền thanh toán COD | Kiểm thử xác nhận F-11 & Kiểm tra mã nguồn API | Có tái hiện được (100%) | Critical | Đã báo (Issue #2) |
+| 3 | Sắp xếp sản phẩm theo tiêu chí "Giá giảm" (`gia-giam`) trên API `/api/products` và giao diện thực tế lại sắp xếp giá tăng dần | Kiểm thử hồi quy FR-06.5 (`PW-05`) | Có tái hiện được (100%) | Medium | Đã báo (Issue #3) |
 
 ### 1.4. Câu hỏi còn bỏ ngỏ
 

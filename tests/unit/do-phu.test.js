@@ -69,10 +69,11 @@ describe('cart - các nhánh của nghiệp vụ giỏ hàng', () => {
   });
 
   test('xem chi tiết giỏ khi sản phẩm không tồn tại trong danh mục', () => {
+    // v1.1 đã sửa lỗi F-08 theo FR-03.6: chặn sản phẩm không tồn tại, trả về 404
     const kq = cart.addToCart(EMAIL, 9999, 1);
-    expect(kq.ok).toBe(true);
-    expect(kq.cart.items[0].name).toBe('(không xác định)');
-    expect(kq.cart.items[0].price).toBe(0);
+    expect(kq.ok).toBe(false);
+    expect(kq.status).toBe(404);
+    expect(kq.message).toBe('Sản phẩm không tồn tại');
   });
 
   test('xóa sản phẩm không có trong giỏ', () => {

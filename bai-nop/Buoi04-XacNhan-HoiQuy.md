@@ -21,11 +21,11 @@ Cột **Kết luận** nhận một trong ba giá trị:
 | F-05 | Thông báo khi bị khóa, tự mở khóa | TC-65130239-32, TC-65130239-34, TC-65130239-35 | Đăng nhập sai 3 lần liên tiếp báo lỗi 423 "Tài khoản đã bị khóa, vui lòng thử lại sau 15 phút". Trong thời gian khóa, nhập đúng mật khẩu vẫn bị từ chối. Hết thời gian khóa, tài khoản tự động mở khóa và reset bộ đếm về 0 | ĐÃ SỬA | Kiểm chứng: Mã nguồn đặt LOCK_DURATION_MS = 15*1000 (15 giây) để mô phỏng 15 phút, sau 15 giây tài khoản tự mở khóa đúng nghiệp vụ |
 | F-06 | Thêm sản phẩm với số lượng 0 | TC-65130239-13 | Thêm sản phẩm với số lượng 0 bị từ chối, trả về mã lỗi 400 và thông báo "Số lượng phải là số nguyên từ 1 đến 99" | ĐÃ SỬA | Hàm validateQuantity đã chặn n < 1 đúng FR-03.2 |
 | F-07 | Chưa giới hạn tổng số lượng giỏ | TC-65130239-19, TC-65130239-20 | Thêm sản phẩm mới làm tổng số lượng vượt 200 bị từ chối với mã lỗi 400. Tuy nhiên khi cập nhật số lượng của sản phẩm đã có sẵn trong giỏ, hàm tongSoLuong cộng dồn cả số lượng mới với số lượng cũ thay vì thay thế, dẫn đến từ chối cập nhật hợp lệ | SỬA CHƯA TRỌN | Logic kiểm tra giỏ hàng chỉ đúng khi thêm sản phẩm mới; sai lệch khi cập nhật số lượng của sản phẩm đã có trong giỏ (FR-03.3 và FR-03.4) |
-| F-08 | Thêm sản phẩm không tồn tại | TC thêm productId=9999 | Trả về mã lỗi 404 và thông báo "Sản phẩm không tồn tại" | ĐÃ SỬA | Đạt theo FR-03.6; hàm addToCart đã kiểm tra store.findProduct(productId) |
+| F-08 | Thêm sản phẩm không tồn tại | do-phu: addToCart 9999 (TC thêm productId=9999) | Trả về mã lỗi 404 và thông báo "Sản phẩm không tồn tại" | ĐÃ SỬA | Đạt theo FR-03.6; hàm addToCart đã kiểm tra store.findProduct(productId) |
 | F-09 | Đơn đúng 500.000đ không miễn phí | TC-65130239-23 | Đơn hàng nội thành có tạm tính đúng 500.000đ được tính phí vận chuyển là 0đ | ĐÃ SỬA | Mã nguồn đã đổi thành subtotal >= FREE_SHIPPING_THRESHOLD đúng FR-04.2 |
 | F-10 | VIP ngoại thành vẫn bị tính phí | TC-65130239-26 | Thành viên VIP mua hàng giao ngoại thành được tính phí vận chuyển là 0đ | ĐÃ SỬA | Mã nguồn calcShippingFee đã miễn phí vận chuyển cho VIP ở mọi khu vực đúng FR-04.3 |
 | F-11 | Chưa giảm 5% cho VIP | TC-65130239-25 | Khi thành viên VIP tạo đơn hàng trên /api/orders, hệ thống đã tính trường discount bằng 5% tạm tính (ví dụ tạm tính 400.000đ được giảm 20.000đ) | ĐÃ SỬA | Riêng yêu cầu giảm giá 5% cho VIP đã được thực hiện đúng FR-05.3. Tuy nhiên phát hiện lỗi hồi quy mới: công thức tổng tiền quên cộng phí vận chuyển |
-| F-12 | Hủy đơn không tồn tại gây lỗi 500 | TC gửi DELETE /api/orders/9999 | Hủy đơn không tồn tại trả về 404 "Không tìm thấy đơn hàng"; đơn ở trạng thái khác "CHO_XAC_NHAN" trả về 409 "Chỉ hủy được đơn ở trạng thái Chờ xác nhận" | ĐÃ SỬA | Đạt theo FR-05.5; tuy nhiên mã nguồn đã bỏ điều kiện kiểm tra email chủ sở hữu đơn hàng |
+| F-12 | Hủy đơn không tồn tại gây lỗi 500 | API-DELETE-01 (DELETE /api/orders/9999) | Hủy đơn không tồn tại trả về 404 "Không tìm thấy đơn hàng"; đơn ở trạng thái khác "CHO_XAC_NHAN" trả về 409 "Chỉ hủy được đơn ở trạng thái Chờ xác nhận" | ĐÃ SỬA | Đạt theo FR-05.5; tuy nhiên mã nguồn đã bỏ điều kiện kiểm tra email chủ sở hữu đơn hàng |
 
 **Tổng hợp:** ĐÃ SỬA 9 / SỬA CHƯA TRỌN 3 / CHƯA SỬA 0
 
@@ -66,6 +66,15 @@ Chạy `npm test` trên bản v1.1 và so sánh với kết quả đã ghi ở B
 
 > Một ca đang xanh chuyển sang đỏ **không phải lúc nào cũng** là lỗi mã nguồn. Nếu yêu cầu thay đổi hoặc hành vi cũ vốn đã sai, chính ca kiểm thử mới là thứ cần cập nhật. Trường hợp đó, ghi rõ ở bảng trên và sửa ca kiểm thử.
 
+**Thực hiện cập nhật 2 ca kiểm thử đã lỗi thời:**
+- Đã sửa ca `do-phu: xem chi tiết giỏ khi sản phẩm không tồn tại trong danh mục` trong `tests/unit/do-phu.test.js`: kỳ vọng `kq.ok === false`, status 404 và message "Sản phẩm không tồn tại" theo đúng FR-03.6.
+- Đã sửa ca `auth-mock: sai mật khẩu MAX_FAILED_ATTEMPTS lần liên tiếp thì tài khoản bị khóa` trong `tests/unit/auth-mock.test.js`: cập nhật chuỗi thông báo khóa sang "Tài khoản đã bị khóa, vui lòng thử lại sau 15 phút" theo đúng FR-02.4.
+
+**Kết quả chạy lại sau khi cập nhật ca test lỗi thời:**
+- **Tổng số ca:** 51
+- **Số ca đạt:** 49
+- **Số ca thất bại còn lại:** 2 ca (cô lập chính xác 100% hai lỗi hồi quy thực sự của mã nguồn: `TC-65130239-08` do viết nhầm `<= 8` và ca kiểm tra `subtotal < 0` trong `shipping.js` do bị xóa điều kiện biên âm).
+
 ## 3. Kiểm thử hồi quy trên chức năng mới FR-06
 
 Chạy bộ ca pairwise (bài tự chọn Buổi 2) hoặc tự thiết kế tối thiểu 6 ca cho màn hình lọc.
@@ -95,9 +104,11 @@ Chạy bộ ca pairwise (bài tự chọn Buổi 2) hoặc tự thiết kế t�
 | FR-05.2 | TC-65130239-28, ca đặt hàng API /api/orders | Không đạt |
 | FR-05.3 | TC-65130239-27, ca đặt hàng VIP /api/orders | Đạt |
 | FR-05.5 | ca DELETE /api/orders/:id | Không đạt |
+| FR-06.1 | Dữ liệu danh mục và tồn kho của 7 sản phẩm trong store.js (PW-01 đến PW-06) | Đạt |
 | FR-06.2 | PW-03, PW-05 | Đạt |
 | FR-06.3 | PW-02, PW-04 | Đạt |
 | FR-06.4 | PW-01, PW-02 | Đạt |
 | FR-06.5 | PW-05 | Không đạt |
 | FR-06.6 | PW-06 | Không đạt |
 | FR-06.7 | PW-01, PW-02, PW-03, PW-04, PW-05, PW-06 | Đạt |
+| FR-06.8 | PW-05, PW-06 (hiển thị nhãn Hết hàng cho sản phẩm tồn kho = 0) | Đạt |

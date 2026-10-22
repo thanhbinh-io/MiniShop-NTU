@@ -60,7 +60,8 @@ describe('login - nghiệp vụ khóa tài khoản', () => {
     const kq = login('sv@ntu.edu.vn', 'sai3');
     expect(kq.ok).toBe(false);
     expect(kq.status).toBe(423);
-    expect(kq.message).toBe('Tài khoản đã bị khóa');
+    // v1.1 cập nhật thông báo khóa đầy đủ theo FR-02.4
+    expect(kq.message).toBe('Tài khoản đã bị khóa, vui lòng thử lại sau 15 phút');
     expect(nguoiDung.locked).toBe(true);
     expect(nguoiDung.failedAttempts).toBe(MAX_FAILED_ATTEMPTS);
   });

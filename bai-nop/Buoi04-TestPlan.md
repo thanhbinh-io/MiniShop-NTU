@@ -16,7 +16,8 @@
 | 12 lỗi nhóm phát triển khẳng định đã sửa | Có | Xác nhận lại từng lỗi đã báo (F-01 đến F-12) xem đã sửa hoàn toàn, sửa chưa trọn hay chưa sửa theo SRS v1.2. |
 | Các chức năng không nằm trong danh sách sửa | Có | Kiểm thử hồi quy bằng bộ kiểm thử tự động và chạy tay để phát hiện hư hại do việc sửa mã nguồn gây ra. |
 | Chức năng mới FR-06 | Có | Đánh giá tính năng mới Tìm kiếm và lọc sản phẩm (8 yêu cầu con) vừa được bổ sung theo đặc tả SRS v1.2. |
-| Hiệu năng, bảo mật | Không | Nằm ngoài phạm vi của đợt kiểm thử rút gọn Buổi 4 (thời lượng 3 giờ, tập trung vào kiểm thử chức năng mức đơn vị và giao diện). |
+| Các chức năng chưa phát triển (K-01, K-02) | Không | Nhà phát triển tuyên bố chưa làm trong phiên bản v1.1.0 theo Ghi chú phát hành mục 4 (K-01: Thanh toán trực tuyến, mã giảm giá, quản lý kho; K-02: Trừ tồn kho khi đặt hàng thành công). |
+| Hiệu năng, bảo mật chuyên sâu | Không | Nằm ngoài phạm vi của đợt kiểm thử rút gọn Buổi 4 (thời lượng 3 giờ, tập trung vào kiểm thử chức năng mức đơn vị và giao diện). |
 
 ## 3. Rủi ro và mức ưu tiên
 
@@ -26,7 +27,7 @@ Liệt kê 3 vùng chức năng rủi ro cao nhất của đợt này, kèm lý 
 |---|---|---|---|---|
 | 1 | Quản lý đơn hàng, tính tiền và ưu đãi VIP (`src/server.js`, `src/services/shipping.js`) | Cao | Tệp `server.js` bị sửa nhiều logic nghiệp vụ liên quan trực tiếp đến số tiền khách phải trả (tính giảm giá VIP 5%, tổng đơn hàng, hủy đơn); sai lệch sẽ gây thất thoát doanh thu hoặc khiếu nại của khách hàng. | 1 |
 | 2 | Đăng ký tài khoản và quy tắc mật khẩu (`src/services/registration.js`) | Cao | Sửa điều kiện biên kiểm tra độ tuổi và bổ sung kiểm tra thành phần mật khẩu; rủi ro chặn người dùng hợp lệ không đăng ký được hoặc bỏ lọt mật khẩu không an toàn ngay tại cửa ngõ hệ thống. | 2 |
-| 3 | Đăng nhập và khóa tài khoản (`src/services/auth.js`) | Cao | Sửa logic reset bộ đếm lần sai và cơ chế tự mở khóa sau thời gian chờ; rủi ro khóa nhầm người dùng hợp lệ hoặc làm mất khả năng bảo vệ tài khoản trước tấn công dò mật khẩu. | 3 |
+| 3 | Đăng nhập và khóa tài khoản (`src/services/auth.js`) | Trung bình | Sửa logic reset bộ đếm lần sai và cơ chế tự mở khóa sau thời gian chờ; rủi ro khóa nhầm ảnh hưởng trải nghiệm người dùng nhưng không gây thất thoát tài chính trực tiếp như Vùng 1 và đã có bộ mock test bao phủ tốt. | 3 |
 
 ## 4. Chiến lược
 
