@@ -89,5 +89,4 @@ Chèn ảnh chụp màn hình Trace Viewer vào thư mục `bai-nop/hinh/` và d
 
 ![Trace Viewer](hinh/trace-viewer.png)
 
-![Trace Viewer](hinh/trace-viewer.png)
 
