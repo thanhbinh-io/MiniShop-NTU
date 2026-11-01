@@ -31,24 +31,70 @@ test('FR-06.3 — lọc theo danh mục Đồ dùng học tập', async () => {
 });
 
 // ---------------------------------------------------------------
-// TODO (9): viết các ca kiểm thử cho FR-06.
-//
-// Tối thiểu 5 ca, phủ các yêu cầu sau:
+// Bộ ca kiểm thử cho FR-06 phủ các yêu cầu của SRS v1.2:
 //   FR-06.2  lọc theo từ khóa (khớp một phần, không phân biệt hoa thường)
 //   FR-06.4  lọc theo khoảng giá, chú ý BIÊN của khoảng 100.000đ–300.000đ
 //   FR-06.5  sắp xếp giá tăng dần VÀ sắp xếp giá giảm dần (hai ca riêng)
 //   FR-06.6  chỉ hiện sản phẩm còn hàng
 //   FR-06.7  tổ hợp nhiều tiêu chí, và trường hợp không có kết quả
-//
-// Kết quả mong đợi phải dẫn từ SRS v1.2, KHÔNG suy ra từ hành vi hiện tại
-// của hệ thống. Sẽ có ca thất bại — đó là điều được mong đợi.
-//
-// Gợi ý kiểm tra thứ tự sắp xếp mà không cần liệt kê từng giá:
-//   const gia = await trangSanPham.danhSachGia();
-//   expect(gia).toEqual([...gia].sort((a, b) => a - b));   // tăng dần
-//
-// Viết xong thì xóa ca giữ chỗ bên dưới.
 // ---------------------------------------------------------------
-test.skip('TODO (9) — bộ ca kiểm thử FR-06', async () => {
-  expect(trangSanPham).toBeTruthy();
+test('FR-06.2 — lọc theo từ khóa không phân biệt hoa thường', async () => {
+  await trangSanPham.loc({ tuKhoa: 'áo' });
+  const ten = await trangSanPham.danhSachTen();
+
+  expect(ten).toHaveLength(2);
+  expect(ten).toEqual(expect.arrayContaining(['Áo thun NTU', 'Áo khoác gió NTU']));
+});
+
+test('FR-06.4 — lọc theo khoảng giá 100k-300k bao gồm hai đầu mút', async () => {
+  await trangSanPham.loc({ khoangGia: '100k-300k' });
+  const ten = await trangSanPham.danhSachTen();
+
+  expect(ten).toHaveLength(3);
+  expect(ten).toEqual(expect.arrayContaining(['Áo thun NTU', 'Bình nước giữ nhiệt', 'Nón bảo hiểm NTU']));
+});
+
+test('FR-06.5 — sắp xếp theo giá tăng dần', async () => {
+  await trangSanPham.loc({ sapXep: 'gia-tang' });
+  const gia = await trangSanPham.danhSachGia();
+
+  expect(gia.length).toBeGreaterThan(0);
+  expect(gia).toEqual([...gia].sort((a, b) => a - b));
+});
+
+test('FR-06.5 — sắp xếp theo giá giảm dần', async () => {
+  await trangSanPham.loc({ sapXep: 'gia-giam' });
+  const gia = await trangSanPham.danhSachGia();
+
+  expect(gia.length).toBeGreaterThan(0);
+  expect(gia).toEqual([...gia].sort((a, b) => b - a));
+});
+
+test('FR-06.6 — chỉ hiện sản phẩm còn hàng', async () => {
+  await trangSanPham.loc({ conHang: true });
+  const tonKho = await trangSanPham.danhSachTonKho();
+
+  expect(tonKho).not.toContain('Hết hàng');
+  expect(tonKho).not.toContain('0');
+  expect(tonKho).toHaveLength(5);
+});
+
+test('FR-06.7 — áp dụng đồng thời từ khóa, danh mục, khoảng giá và tồn kho', async () => {
+  await trangSanPham.loc({
+    tuKhoa: 'bút',
+    danhMuc: 'do-dung-hoc-tap',
+    khoangGia: 'duoi-100k',
+    conHang: true,
+  });
+
+  expect(await trangSanPham.danhSachTen()).toEqual(['Bút ký NTU']);
+});
+
+test('FR-06.7 — tổ hợp tiêu chí không có kết quả hiển thị thông báo phù hợp', async () => {
+  await trangSanPham.loc({ tuKhoa: 'balo', danhMuc: 'qua-luu-niem' });
+  const ten = await trangSanPham.danhSachTen();
+
+  expect(ten).toEqual([]);
+  await expect(trangSanPham.thongBaoRong).toBeVisible();
+  await expect(trangSanPham.thongBaoRong).toHaveText('Không tìm thấy sản phẩm phù hợp.');
 });

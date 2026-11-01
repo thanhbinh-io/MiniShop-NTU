@@ -15,28 +15,21 @@ test.beforeEach(async ({ request }) => {
 });
 
 // ---------------------------------------------------------------
-// CA FLAKY SỐ 1 — ĐÃ CHO SẴN, PHẢI SỬA
+// CA FLAKY SỐ 1 — ĐÃ SỬA BẰNG WEB-FIRST ASSERTION
 //
-// Danh sách sản phẩm được trả về sau độ trễ ngẫu nhiên 100–1500ms
-// (xem GET /api/products trong src/server.js).
-// Ca này chờ cứng 600ms rồi mới kiểm tra, nên lúc xanh lúc đỏ.
-//
-// TODO (6a): sửa ca này để nó ổn định. KHÔNG dùng waitForTimeout.
+// Thay vì waitForTimeout(600) (đoán thời gian chờ), dùng toHaveCount
+// để Playwright tự chờ danh sách sản phẩm hiển thị đủ 8 dòng (1 tiêu đề + 7 sản phẩm).
 // ---------------------------------------------------------------
 test('danh sách sản phẩm hiển thị đủ 7 mặt hàng', async ({ page }) => {
   await page.goto('/');
-  await page.waitForTimeout(600); // ← nguyên nhân gây flaky
-  const soDong = await page.getByTestId('product-list').locator('tr').count();
-  expect(soDong).toBe(8); // 7 sản phẩm + 1 dòng tiêu đề
+  await expect(page.getByTestId('product-list').locator('tr')).toHaveCount(8);
 });
 
 // ---------------------------------------------------------------
-// CA FLAKY SỐ 2 — ĐÃ CHO SẴN, PHẢI SỬA
+// CA FLAKY SỐ 2 — ĐÃ SỬA BẰNG WEB-FIRST ASSERTION
 //
-// Ca này đọc nội dung thông báo NGAY sau khi bấm nút, trong khi thông báo
-// chỉ xuất hiện sau khi máy chủ phản hồi.
-//
-// TODO (6b): sửa ca này bằng web-first assertion.
+// Thay vì đọc textContent() ngay sau khi bấm nút (khi máy chủ chưa kịp phản hồi),
+// dùng await expect(locator).toContainText(...) để Playwright tự chờ thông báo xuất hiện.
 // ---------------------------------------------------------------
 test('tính phí vận chuyển cho thành viên thường', async ({ page }) => {
   await page.goto('/');
@@ -51,6 +44,5 @@ test('tính phí vận chuyển cho thành viên thường', async ({ page }) =>
   await page.getByTestId('zone').selectOption('noi-thanh');
   await page.getByTestId('btn-fee').click();
 
-  const thongBao = await page.getByTestId('fee-msg').textContent(); // ← đọc quá sớm
-  expect(thongBao).toContain('Phí vận chuyển');
+  await expect(page.getByTestId('fee-msg')).toContainText('Phí vận chuyển');
 });

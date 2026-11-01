@@ -1,18 +1,19 @@
 /*
  * Page Object cho màn hình Sản phẩm và bộ lọc (FR-06).
- *
- * TODO (4): hoàn thiện lớp này ở Phần 3.
- * Gợi ý các locator cần có (xem data-testid trong public/index.html):
- *   f-tukhoa · f-danhmuc · f-khoanggia · f-sapxep · f-conhang
- *   btn-loc · btn-xoabo-loc · product-list · khong-co-ket-qua
  */
 class ProductPage {
   constructor(page) {
     this.page = page;
     this.danhSach = page.getByTestId('product-list');
     this.nutLoc = page.getByTestId('btn-loc');
+    this.nutXoaBoLoc = page.getByTestId('btn-xoabo-loc');
     this.thongBaoRong = page.getByTestId('khong-co-ket-qua');
-    // TODO (4a): bổ sung các locator còn lại
+
+    this.oTuKhoa = page.getByTestId('f-tukhoa');
+    this.oDanhMuc = page.getByTestId('f-danhmuc');
+    this.oKhoangGia = page.getByTestId('f-khoanggia');
+    this.oSapXep = page.getByTestId('f-sapxep');
+    this.oConHang = page.getByTestId('f-conhang');
   }
 
   async moTrang() {
@@ -35,41 +36,80 @@ class ProductPage {
    *   await trangSP.loc({ danhMuc: 'qua-luu-niem', sapXep: 'gia-giam' });
    */
   async loc({ tuKhoa, danhMuc, khoangGia, sapXep, conHang } = {}) {
-    // TODO (4b): điền từng tiêu chí nếu được truyền, sau đó bấm nút Lọc.
-    //   - Ô văn bản dùng .fill(), danh sách chọn dùng .selectOption()
-    //   - Ô đánh dấu dùng .check() hoặc .uncheck()
-    //   - Sau khi bấm Lọc, gọi this.chokKetQua() rồi mới trả về.
-    throw new Error('Chưa hoàn thành TODO (4b) trong ProductPage.loc()');
+    if (tuKhoa !== undefined) {
+      await this.oTuKhoa.fill(tuKhoa);
+    }
+    if (danhMuc !== undefined) {
+      await this.oDanhMuc.selectOption(danhMuc);
+    }
+    if (khoangGia !== undefined) {
+      await this.oKhoangGia.selectOption(khoangGia);
+    }
+    if (sapXep !== undefined) {
+      await this.oSapXep.selectOption(sapXep);
+    }
+    if (conHang !== undefined) {
+      if (conHang) {
+        await this.oConHang.check();
+      } else {
+        await this.oConHang.uncheck();
+      }
+    }
+    await this.nutLoc.click();
+    await this.chokKetQua();
   }
 
-  /** Trả về mảng tên sản phẩm đang hiển thị, theo đúng thứ tự trên màn hình. */
+  /** Trả về mảng tên sản phẩm đang hiển thị, theo đúng thực tế trên màn hình. */
   async danhSachTen() {
-    // TODO (4c)
-    //   Gợi ý: allTextContents() trả về mảng nội dung của mọi phần tử khớp locator.
-    //   Nhớ xử lý trường hợp danh sách rỗng (có thongBaoRong) thì trả về [].
-    throw new Error('Chưa hoàn thành TODO (4c) trong ProductPage.danhSachTen()');
+    await this.chokKetQua();
+    if (await this.thongBaoRong.isVisible()) {
+      return [];
+    }
+    return (await this.danhSach.locator('table tr:has(td) td:nth-child(1)').allTextContents())
+      .map((ten) => ten.trim());
   }
 
   /**
-   * Trả về mảng giá dạng SỐ, theo đúng thứ tự trên màn hình.
+   * Trả về mảng giá dạng SỐ, theo đúng thực tế trên màn hình.
    * Trên giao diện giá hiển thị dạng "150.000đ" nên phải bỏ dấu chấm và chữ đ.
    */
   async danhSachGia() {
-    // TODO (4d)
-    throw new Error('Chưa hoàn thành TODO (4d) trong ProductPage.danhSachGia()');
+    await this.chokKetQua();
+    if (await this.thongBaoRong.isVisible()) {
+      return [];
+    }
+    const gia = await this.danhSach.locator('table tr:has(td) td:nth-child(3)').allTextContents();
+    return gia.map((mucGia) => Number(mucGia.replace(/[^\d]/g, '')));
   }
 
-  /** Trả về mảng nội dung cột Tồn kho, theo đúng thứ tự trên màn hình. */
+  /** Trả về mảng nội dung cột Tồn kho, theo đúng thực tế trên màn hình. */
   async danhSachTonKho() {
-    // TODO (4e)
-    throw new Error('Chưa hoàn thành TODO (4e) trong ProductPage.danhSachTonKho()');
+    await this.chokKetQua();
+    if (await this.thongBaoRong.isVisible()) {
+      return [];
+    }
+    return (await this.danhSach.locator('table tr:has(td) td:nth-child(4)').allTextContents())
+      .map((tonKho) => tonKho.trim());
   }
 
   /** Thêm một sản phẩm vào giỏ theo mã sản phẩm. ĐÃ VIẾT SẴN. */
   async themVaoGio(maSanPham, soLuong) {
+    await this.chokKetQua();
+    const phanHoi = this.page.waitForResponse(
+      (response) => response.url().endsWith('/api/cart') && response.request().method() === 'POST'
+    );
     await this.page.getByTestId(`qty-${maSanPham}`).fill(String(soLuong));
     await this.page.getByTestId(`add-${maSanPham}`).click();
+    await phanHoi;
   }
+
+  async xoaBoLoc() {
+    await this.nutXoaBoLoc.click();
+    await this.chokKetQua();
+  }
+
+  
 }
+
 
 module.exports = { ProductPage };
