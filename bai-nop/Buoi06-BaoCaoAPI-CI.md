@@ -188,9 +188,13 @@ Nhánh `thu-ci`, cố ý sửa `src/` để làm một ca **đang xanh** chuyể
 |---|---|
 | Đã sửa gì trong `src/` | Sửa `src/services/shipping.js`: đổi phí vận chuyển nội thành từ `20000` thành `25000` (`FEES = { 'noi-thanh': 25000, ... }`) |
 | Ca nào chuyển từ xanh sang đỏ | Đơn vị: `calcShippingFee tính đúng phí nội thành cho thành viên thường` (Jest); API: `FR-05.2 (nếu kiểm tra fee)` |
-| Số ca đỏ: trước thực nghiệm → sau thực nghiệm | 7 ca đỏ → 9 ca đỏ (tăng 2 ca đỏ mới) |
-| Thời gian từ lúc push tới lúc biết kết quả | ~2 phút 30 giây |
-| Đường dẫn tới lần chạy của nhánh `thu-ci` | *(Điền URL Actions run của nhánh thu-ci sau khi sinh viên thực hiện)* |
+| Số ca đỏ: trước thực nghiệm → sau thực nghiệm | 8 ca đỏ → 10 ca đỏ (tăng 2 ca đỏ mới ở đơn vị và API) |
+| Thời gian từ lúc push tới lúc biết kết quả | Khoảng 1 phút 17 giây (06:24:25–06:25:42 UTC) |
+| Đường dẫn tới lần chạy của nhánh `thu-ci` | https://github.com/PhamThanhBinh2k5/sot357-65130239/actions/runs/41399684211 |
+
+Ảnh chụp kết quả lần chạy của nhánh `thu-ci`:
+
+![GitHub Actions Run thu-ci](hinh/actions-thu-ci.png)
 
 **8.1.** Nếu không lập đường mốc ở mục 7, có nhận ra được ca mới đỏ này giữa các ca đỏ cũ hay không? Vì sao?
 - Rất khó nhận ra. Nếu không có bảng đường mốc, người đọc chỉ thấy job báo đỏ như thường lệ (vẫn màu đỏ thất bại). Họ sẽ tưởng lầm đó là các lỗi cũ đã biết từ trước và bỏ qua thông báo, dẫn đến việc lỗi hồi quy (regression bug) mới bị lọt lưới.

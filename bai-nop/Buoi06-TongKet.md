@@ -17,23 +17,41 @@
 
 ## 2. Bản đồ lỗi theo tầng kiểm thử
 
-Với mỗi lỗi đã phát hiện trong cả khóa, ghi lại **tầng nào bắt được**. Đánh dấu `X` vào các cột tương ứng; một lỗi có thể bị bắt ở nhiều tầng. Phải điền **ít nhất 9 dấu `X`**.
-
-Chín dòng đầu đã được ghi tên sẵn. Các dòng trống ở cuối dành cho những lỗi khác mà bản thân đã phát hiện trong cả đợt — kể cả lỗi tài liệu tìm được ở Buổi 1 và lỗi chỉ tầng đơn vị bắt được; thêm dòng nếu cần.
+Mỗi lỗi được đánh dấu **đúng một dấu X** ở tầng đại diện chính / không thể thay thế (tầng phát hiện sớm nhất hoặc duy nhất có khả năng kiểm tra trực tiếp lỗi đó); các lỗi đồng thời quan sát được ở tầng khác được phân tích ở phần nhận xét để không đếm trùng.
 
 | Lỗi | Review tĩnh | Đơn vị | API | E2E | Thủ công / thăm dò |
-|---|---|---|---|---|---|
-| Chấp nhận tuổi dưới giới hạn | X | X | X | X | X |
-| Mật khẩu 8 ký tự bị từ chối | X | X | | | X |
-| Mật khẩu chữ in hoa bị từ chối | X | X | X | | X |
-| Giỏ hàng cộng dồn khi cập nhật số lượng | X | X | X | X | X |
-| Tài khoản tự mở khóa quá sớm | | X | | | X |
-| Hủy được đơn của tài khoản khác | | | X | | |
-| Tổng tiền thiếu phí vận chuyển | | | X | X | X |
-| Sắp xếp giá giảm dần không hoạt động | | | X | X | X |
-| Lọc "chỉ còn hàng" không hoạt động | | | X | X | X |
-| Ngưỡng miễn phí vận chuyển SRS mâu thuẫn | X | | | | |
-| **Tổng số dấu theo tầng** | 5 | 5 | 7 | 5 | 8 |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Chấp nhận tuổi dưới giới hạn (tuổi 17) | | X | | | |
+| Mật khẩu 8 ký tự bị từ chối | | X | | | |
+| Mật khẩu chữ in hoa bị từ chối | | | X | | |
+| Giỏ hàng cộng dồn khi cập nhật số lượng | | X | | | |
+| Tài khoản tự mở khóa quá sớm (15 giây thay vì 15 phút) | | | | | X |
+| Hủy được đơn của tài khoản khác (Lỗ hổng IDOR) | | | X | | |
+| Tổng tiền thiếu phí vận chuyển | | | X | | |
+| Sắp xếp giá giảm dần không hoạt động | | | X | | |
+| Lọc "chỉ còn hàng" không hoạt động | | | X | | |
+| Chấp nhận mật khẩu dài 21 ký tự | | X | | | |
+| Chấp nhận mật khẩu chỉ có chữ số | | X | | | |
+| Chấp nhận mật khẩu chỉ có chữ cái | | X | | | |
+| Chấp nhận số lượng giỏ bằng 0 | | X | | | |
+| VIP bị tính phí ngoại thành | | X | | | |
+| Không miễn phí ở tạm tính đúng 500.000đ | | X | | | |
+| Đăng nhập đúng không đặt lại bộ đếm sai | | X | | | |
+| Thông báo đăng nhập khi tài khoản bị khóa sai | | X | | | |
+| SRS v1.0 mâu thuẫn giới hạn tuổi (mục 2.2 và FR-01.3) | X | | | | |
+| SRS v1.0 dùng "mật khẩu đủ mạnh" nhưng không định nghĩa tiêu chí | X | | | | |
+| SRS v1.0 mâu thuẫn ngưỡng khóa đăng nhập (3 so với 5 lần) | X | | | | |
+| SRS v1.0 giới hạn giỏ hàng dùng từ "hợp lý", không định lượng | X | | | | |
+| SRS v1.0 dùng thuật ngữ VIP không nhất quán | X | | | | |
+| SRS v1.0 sai phí ngoại thành trong ví dụ phụ lục | X | | | | |
+| SRS v1.0 NFR-01 "phản hồi nhanh" không đo được | X | | | | |
+| SRS v1.0 NFR-02 yêu cầu uptime 100%, không khả thi | X | | | | |
+| SRS v1.0 thiếu yêu cầu chức năng cho mã giảm giá trong use case | X | | | | |
+| SRS v1.0 thiếu quy định bắt buộc cho email, tuổi, mật khẩu | X | | | | |
+| SRS v1.0 thiếu điều kiện trạng thái cho phép hủy đơn | X | | | | |
+| **Tổng số dấu đại diện theo tầng** | **11** | **11** | **5** | **0** | **1** |
+
+*Ghi chú:* Trong các lỗi về tổng tiền, sắp xếp và lọc tồn kho, cả API lẫn E2E đều phát hiện được; bảng chọn tầng API làm đại diện chính vì các assertion kiểm tra trực tiếp hợp đồng dữ liệu trả về từ backend.
 
 ### 2.1. Nhận xét
 
@@ -42,22 +60,25 @@ Chín dòng đầu đã được ghi tên sẵn. Các dòng trống ở cuối d
 | Lỗi | Tầng duy nhất bắt được | Hậu quả nếu bỏ tầng này |
 |---|---|---|
 | Hủy được đơn của tài khoản khác (Lỗ hổng IDOR / Phân quyền) | API | Nếu bỏ tầng API, lỗ hổng này sẽ lọt ra môi trường sản phẩm (production). Kẻ xấu có thể gửi request DELETE trực tiếp đến API để hủy toàn bộ đơn hàng của khách hàng khác mà không thể bị phát hiện qua UI hay Unit test. |
-| Ngưỡng miễn phí vận chuyển SRS mâu thuẫn (giữa 300k và 500k) | Review tĩnh | Nếu bỏ review tĩnh, sự mơ hồ trong tài liệu yêu cầu sẽ dẫn tới lập trình viên hiểu một kiểu, kiểm thử viên hiểu một kiểu, gây lãng phí thời gian tranh cãi khi viết test. |
+| Mật khẩu chữ in hoa bị từ chối với mã 400 | API | Lỗi xuất phát từ router HTTP đăng ký (`src/services/registration.js:30`), Unit và E2E không kiểm thử hợp đồng HTTP với tổ hợp chữ hoa này. |
+| 11 phát hiện mâu thuẫn, mơ hồ và thiếu sót trong SRS v1.0 | Review tĩnh | Nếu bỏ review tĩnh, sự mơ hồ trong tài liệu yêu cầu sẽ dẫn tới lập trình viên hiểu một kiểu, kiểm thử viên hiểu một kiểu, gây lãng phí lớn thời gian tranh cãi khi viết test. |
+| Các lỗi kiểm tra biên và logic hàm cục bộ (mật khẩu 21 ký tự, chỉ số, chỉ chữ, số lượng 0, reset failedAttempts) | Đơn vị | Nếu bỏ đơn vị, các lỗi logic hàm rẽ nhánh chi tiết sẽ rất khó dựng kịch bản hoặc bị lớp giao diện/validation HTML5 chặn trước, khiến kiểm thử viên không thể xác minh độ bền của logic nghiệp vụ cốt lõi. |
+| Tài khoản tự mở khóa sau khoảng 15 giây (thay vì 15 phút) | Thủ công / thăm dò | Nếu không có phiên kiểm thử thăm dò đo thời gian thực tế, các bài kiểm thử tự động chỉ kiểm tra trạng thái khóa ngay lập tức sẽ bỏ sót lỗi cài đặt sai thời gian hết hạn (15s vs 15m). |
 
 **2.1.2.** Tầng nào bắt được nhiều lỗi nhất? Có phải tầng đó quan trọng nhất không? Giải thích.
-- Tầng **Thủ công / thăm dò** bắt được nhiều biểu hiện lỗi nhất (8 dấu X), tiếp theo là **API** (6 dấu X) và **Đơn vị / Tĩnh / E2E** (5 dấu X).
+- Tầng **Review tĩnh** (11 lỗi tài liệu) và **Kiểm thử đơn vị** (11 lỗi logic hàm) bắt được số lượng lỗi nhiều nhất.
 - **Không phải cứ bắt được nhiều lỗi nhất là quan trọng nhất.** Mỗi tầng có vai trò và chi phí riêng:
-  - Kiểm thử thủ công rất nhạy với các lỗi giao diện và trải nghiệm người dùng, nhưng tốn thời gian, dễ sai sót do con người và không thể chạy tự động hàng trăm lần mỗi ngày khi có code mới.
-  - Kiểm thử tĩnh và đơn vị bắt lỗi từ rất sớm (Shift-Left Testing) khi chi phí sửa chữa còn rẻ nhất.
-  - Tầng API bắt được các lỗi bảo mật và phân quyền mà không tầng nào khác bắt được.
+  - Kiểm thử tĩnh và đơn vị bắt lỗi từ rất sớm (Shift-Left Testing) khi chi phí sửa chữa còn rẻ nhất, ngăn ngừa lỗi lan sang các tầng sau.
+  - Tầng API tuy chỉ có 5 lỗi đại diện nhưng lại bắt được các lỗi phân quyền (IDOR) và hợp đồng dữ liệu nghiêm trọng mà tầng đơn vị và E2E hoàn toàn bất lực.
+  - Tầng E2E tuy 0 lỗi đại diện độc quyền (do các lỗi backend đã bị API bắt trước) nhưng vẫn tối quan trọng để đảm bảo hành trình người dùng xuyên suốt toàn hệ thống.
   - Sự kết hợp bổ trợ giữa các tầng mới tạo nên chất lượng toàn diện.
 
 **2.1.3.** Đối chiếu với **tháp kiểm thử** (Chương 6): tỷ lệ số ca giữa ba tầng trong repo của mình là bao nhiêu? Tỷ lệ đó có hợp lý không?
 - Tỷ lệ số ca kiểm thử tự động trong repo:
-  - Đơn vị: 25 ca (~38%)
+  - Đơn vị: 25 ca (~37%)
   - API: 21 ca (~31%)
   - Đầu cuối (E2E): 21 ca (~31%)
-- **Đánh giá:** Tỷ lệ này có hình dáng tương đối cân đối giữa các tầng tự động, tuy nhiên phần kiểm thử đơn vị (25 ca) còn hơi thấp so với mô hình kim tự tháp chuẩn (vốn khuyến nghị tầng đơn vị chiếm 60–70% số lượng ca vì tốc độ nhanh và chi phí thấp). Tầng E2E (21 ca) chiếm tỷ trọng khá lớn, điều này làm tổng thời gian chạy CI kéo dài lên gần 3 phút. Nếu phát triển tiếp, nhóm nên mở rộng thêm số lượng ca ở tầng Đơn vị và API để giảm bớt tải cho tầng E2E.
+- **Đánh giá:** Tỷ lệ này có hình dáng tương đối cân đối giữa các tầng tự động, tuy nhiên phần kiểm thử đơn vị (25 ca) còn hơi thấp so với mô hình kim tự tháp chuẩn (vốn khuyến nghị tầng đơn vị chiếm 60–70% số lượng ca vì tốc độ nhanh và chi phí thấp). Tầng E2E (21 ca) chiếm tỷ trọng khá lớn, điều này làm tổng thời gian chạy CI kéo dài lên hơn 1 phút. Nếu phát triển tiếp, nhóm nên mở rộng thêm số lượng ca ở tầng Đơn vị và API để giảm bớt tải cho tầng E2E.
 
 ## 3. Chi phí và giá trị của từng tầng
 
@@ -65,11 +86,11 @@ Thời gian chạy phải **đo thật**, không ước lượng. Cột cuối �
 
 | Tầng | Số ca | Thời gian chạy (đo thật) | Thời gian viết (ước lượng, giờ) | Số lỗi riêng tầng này bắt được |
 |---|---|---|---|---|
-| Review tĩnh | 11 mục review + ESLint | 1.8s (ESLint) | 3h | 1 |
-| Đơn vị | 25 ca | 1.5s | 2h | 0 |
-| API | 21 ca | 10.2s | 2.5h | 2 |
+| Review tĩnh | 14 lỗi tài liệu + ESLint | 1.8s (ESLint) | 3h | 11 |
+| Đơn vị | 25 ca | 1.5s | 2h | 11 |
+| API | 21 ca | 10.2s | 2.5h | 5 |
 | E2E | 21 ca | 43.3s | 4h | 0 |
-| Thủ công / thăm dò | 12 ca xác nhận + charter | ~25 phút | 1h | 0 |
+| Thủ công / thăm dò | 12 ca xác nhận + charter | ~25 phút | 1h | 1 |
 
 **3.1.** Nếu đợt kiểm thử chỉ còn **một nửa** thời gian, thứ tự ưu tiên giữ lại các tầng là gì? Căn cứ vào bảng trên, không căn cứ vào cảm nhận.
 - Căn cứ vào chi phí thời gian chạy và khả năng bắt lỗi độc nhất:
