@@ -1,7 +1,7 @@
 // Nghiệp vụ tính phí vận chuyển - xem SRS mục FR-04
 // Phiên bản 1.1: đã xử lý phản hồi về ngưỡng miễn phí và ưu đãi VIP.
 const FEES = {
-  'noi-thanh': 20000,
+  'noi-thanh': 25000, // đổi từ 20000 thành 25000
   'ngoai-thanh': 35000,
 };
 
