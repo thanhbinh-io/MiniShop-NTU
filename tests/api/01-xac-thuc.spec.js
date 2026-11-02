@@ -8,7 +8,7 @@
  *   (b) cấu trúc thân phản hồi;
  *   (c) giá trị nghiệp vụ bên trong thân phản hồi.
  *
- * Nhiệm vụ của sinh viên: hoàn thành TODO (1) đến TODO (4).
+ * Đã hoàn thành các yêu cầu kiểm thử xác thực và phân quyền (1 đến 4).
  * Không mở trình duyệt trong file này — chỉ dùng fixture `request`.
  */
 const { test, expect } = require('@playwright/test');
@@ -65,46 +65,116 @@ test('GET /api/cart không kèm token trả về 401', async ({ request }) => {
 });
 
 // ---------------------------------------------------------------
-// TODO (1): FR-02.3 — sai mật khẩu đủ 3 lần liên tiếp thì khóa tài khoản.
-//   Hai lần đầu phải nhận 401; lần thứ ba phải nhận 423 kèm thông báo
-//   chứa 'Tài khoản đã bị khóa'. Mỗi lần dùng một mật khẩu sai khác nhau.
-//   Xóa dòng TODO này sau khi hoàn thành.
+// Ca bổ sung: FR-01.4 — mật khẩu có chữ hoa và chữ số được chấp nhận
+// Lỗi bug thật: src/services/registration.js kiểm tra /[a-z]/ nên từ chối mật khẩu chữ hoa với 400
 // ---------------------------------------------------------------
+test('FR-01.4 — mật khẩu có chữ hoa và chữ số được chấp nhận', async ({ request }) => {
+  const credentials = {
+    fullName: 'Nguoi Dung Thu',
+    email: `hoa-${Date.now()}@ntu.edu.vn`,
+    age: 20,
+    password: 'ABCDEFGH12',
+  };
+  const res = await request.post('/api/register', { data: credentials });
+
+  expect(res.status()).toBe(201);
+  const data = await res.json();
+  expect(data).toMatchObject({ ok: true, message: 'Đăng ký thành công' });
+
+  const login = await request.post('/api/login', {
+    data: { email: credentials.email, password: credentials.password },
+  });
+  expect(login.status()).toBe(200);
+  expect((await login.json()).user.email).toBe(credentials.email);
+});
 
 // ---------------------------------------------------------------
-// TODO (2): FR-02.4 — tài khoản đang bị khóa thì mật khẩu ĐÚNG vẫn bị
-//   từ chối. Dựng trạng thái khóa trước, sau đó gọi lại với TK_THUONG
-//   và kiểm mã trạng thái cùng thông báo.
-//   Xóa dòng TODO này sau khi hoàn thành.
+// Ca 1: FR-02.3 — sai mật khẩu đủ 3 lần liên tiếp thì khóa tài khoản.
 // ---------------------------------------------------------------
+test('FR-02.3 — sai mật khẩu 3 lần liên tiếp: lần 1 và 2 trả về 401, lần 3 trả về 423', async ({ request }) => {
+  // Lần 1 — sai mật khẩu, chưa khóa
+  const lan1 = await request.post('/api/login', {
+    data: { email: TK_THUONG.email, password: 'Sai_Lan1' },
+  });
+  expect(lan1.status()).toBe(401);
+
+  // Lần 2 — sai mật khẩu, chưa khóa
+  const lan2 = await request.post('/api/login', {
+    data: { email: TK_THUONG.email, password: 'Sai_Lan2' },
+  });
+  expect(lan2.status()).toBe(401);
+
+  // Lần 3 — tài khoản bị khóa, trả về 423
+  const lan3 = await request.post('/api/login', {
+    data: { email: TK_THUONG.email, password: 'Sai_Lan3' },
+  });
+  expect(lan3.status()).toBe(423);
+  expect((await lan3.json()).message).toContain('Tài khoản đã bị khóa');
+});
 
 // ---------------------------------------------------------------
-// TODO (3): GET /api/cart với token không tồn tại phải trả về 401.
-//   Gửi header Authorization: 'Bearer <một chuỗi bất kỳ>'.
-//   Xóa dòng TODO này sau khi hoàn thành.
+// Ca 2: FR-02.4 — tài khoản đang bị khóa thì mật khẩu ĐÚNG vẫn bị từ chối.
 // ---------------------------------------------------------------
+test('FR-02.4 — tài khoản đang bị khóa: đăng nhập đúng mật khẩu vẫn trả về 423', async ({ request }) => {
+  // Dựng trạng thái khóa: đăng nhập sai 3 lần
+  for (const pw of ['Sai1', 'Sai2', 'Sai3']) {
+    await request.post('/api/login', { data: { email: TK_THUONG.email, password: pw } });
+  }
+
+  // Giờ đăng nhập đúng mật khẩu — vẫn phải bị từ chối vì tài khoản đang khóa
+  const res = await request.post('/api/login', { data: TK_THUONG });
+  expect(res.status()).toBe(423);
+  expect((await res.json()).message).toContain('Tài khoản đã bị khóa');
+});
 
 // ---------------------------------------------------------------
-// TODO (4): FR-05.5 — một tài khoản KHÔNG được hủy đơn hàng của tài
-//   khoản khác. Đây là ca quan trọng nhất của Phần 1A, vì giao diện web
-//   không có đường nào dựng được tình huống này.
-//   Các bước:
-//     1. Lấy token của TK_THUONG và của TK_VIP bằng layToken().
-//     2. Dùng token của TK_THUONG: thêm sản phẩm 4 vào giỏ, rồi tạo đơn
-//        với zone 'noi-thanh'. Kiểm tra tạo đơn trả về 201 và lưu lại id.
-//     3. Dùng token của TK_VIP gọi DELETE /api/orders/<id> đó.
-//        Theo FR-05.5, phản hồi phải là 404 (coi như không tìm thấy đơn).
-//     4. Kiểm tra TÁC DỤNG PHỤ: gọi lại GET /api/orders bằng token của
-//        TK_THUONG, đơn hàng vẫn phải ở trạng thái 'CHO_XAC_NHAN'.
-//   Bước 4 là bắt buộc: một mã trạng thái đúng không chứng minh được dữ
-//   liệu không bị thay đổi.
-//   Xóa dòng TODO này sau khi hoàn thành.
+// Ca 3: GET /api/cart với token không tồn tại phải trả về 401.
 // ---------------------------------------------------------------
+test('GET /api/cart với token giả mạo trả về 401', async ({ request }) => {
+  const res = await request.get('/api/cart', {
+    headers: { Authorization: 'Bearer mot_chuoi_bat_ky_khong_hop_le' },
+  });
 
-// Hằng TK_VIP và hàm layToken ở trên dành cho TODO (4).
-// Dòng dưới chỉ để file khung chạy được; xóa nó khi làm TODO (4).
-test('TODO: thay khối này bằng bốn ca ở TODO (1) đến TODO (4)', async ({ request }) => {
-  expect(typeof layToken).toBe('function');
-  expect(TK_VIP.email).toContain('@');
-  expect((await request.get('/api/health')).status()).toBe(200);
+  expect(res.status()).toBe(401);
+  expect((await res.json()).message).toBe('Bạn cần đăng nhập');
+});
+
+// ---------------------------------------------------------------
+// Ca 4: FR-05.5 — một tài khoản KHÔNG được hủy đơn hàng của tài khoản khác.
+// ---------------------------------------------------------------
+test('FR-05.5 — tài khoản VIP không được hủy đơn hàng của tài khoản THUONG', async ({ request }) => {
+  // Bước 1: lấy token của cả hai tài khoản
+  const tokenThuong = await layToken(request, TK_THUONG);
+  const tokenVip = await layToken(request, TK_VIP);
+
+  // Bước 2: TK_THUONG thêm sản phẩm 4 vào giỏ rồi tạo đơn hàng
+  await request.post('/api/cart', {
+    headers: { Authorization: `Bearer ${tokenThuong}` },
+    data: { productId: 4, qty: 1 },
+  });
+  const taoKetQua = await request.post('/api/orders', {
+    headers: { Authorization: `Bearer ${tokenThuong}` },
+    data: { zone: 'noi-thanh' },
+  });
+  expect(taoKetQua.status()).toBe(201);
+  // POST /api/orders trả về object order trực tiếp (không bọc trong { order: ... })
+  const donHang = await taoKetQua.json();
+  const donId = donHang.id;
+
+  // Bước 3: TK_VIP thử hủy đơn hàng của TK_THUONG — theo FR-05.5 phải nhận 404
+  // Lỗi bug thật: src/server.js không kiểm email chủ sở hữu nên trả về 200
+  const huyKetQua = await request.delete(`/api/orders/${donId}`, {
+    headers: { Authorization: `Bearer ${tokenVip}` },
+  });
+  expect(huyKetQua.status()).toBe(404);
+
+  // Bước 4: kiểm tác dụng phụ — đơn hàng của TK_THUONG vẫn còn nguyên
+  // GET /api/orders trả về array trực tiếp (không bọc trong { orders: ... })
+  const danhSachDon = await request.get('/api/orders', {
+    headers: { Authorization: `Bearer ${tokenThuong}` },
+  });
+  const orders = await danhSachDon.json();
+  const donGoc = orders.find((d) => d.id === donId);
+  expect(donGoc).toBeDefined();
+  expect(donGoc.status).toBe('CHO_XAC_NHAN');
 });

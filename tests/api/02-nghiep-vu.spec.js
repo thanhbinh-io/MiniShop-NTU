@@ -7,7 +7,7 @@
  *   - quy tắc nghiệp vụ trong thân phản hồi;
  *   - tác dụng phụ, kiểm bằng một lời gọi API thứ hai.
  *
- * Nhiệm vụ của sinh viên: hoàn thành TODO (5) đến TODO (12).
+ * Đã hoàn thành các yêu cầu kiểm thử nghiệp vụ (5 đến 12).
  * Không mở trình duyệt trong file này — chỉ dùng fixture `request`.
  */
 const { test, expect } = require('@playwright/test');
@@ -68,65 +68,145 @@ test('FR-05.1 — đặt hàng thành công thì giỏ hàng được làm trố
 });
 
 // ---------------------------------------------------------------
-// TODO (5): FR-03.5 — xóa một sản phẩm KHÔNG có trong giỏ phải trả về 404.
-//   Gọi DELETE /api/cart/3 khi giỏ đang trống.
+// Ca 5: FR-03.5 — xóa một sản phẩm KHÔNG có trong giỏ phải trả về 404.
 // ---------------------------------------------------------------
+test('FR-03.5 — xóa sản phẩm không có trong giỏ hàng trả về 404', async ({ request }) => {
+  // Giỏ đang trống, xóa productId=3 phải nhận 404
+  const res = await request.delete('/api/cart/3', kemToken());
+
+  expect(res.status()).toBe(404);
+});
 
 // ---------------------------------------------------------------
-// TODO (6): FR-05.1 — đặt hàng khi giỏ TRỐNG phải trả về 400 kèm thông báo
-//   'Giỏ hàng đang trống'.
+// Ca 6: FR-05.1 — đặt hàng khi giỏ TRỐNG phải trả về 400 kèm thông báo.
 // ---------------------------------------------------------------
+test('FR-05.1 — đặt hàng khi giỏ trống trả về 400', async ({ request }) => {
+  const res = await request.post('/api/orders', { ...kemToken(), data: { zone: 'noi-thanh' } });
+
+  expect(res.status()).toBe(400);
+  expect((await res.json()).message).toBe('Giỏ hàng đang trống');
+});
 
 // ---------------------------------------------------------------
-// TODO (7): FR-05.2 — kiểm công thức tổng tiền của đơn hàng.
-//   Thêm sản phẩm 4 (350.000đ) vào giỏ, tạo đơn với zone 'noi-thanh'.
-//   Phản hồi phải là 201. Trong thân phản hồi, kiểm từng thành phần:
-//     subtotal = 350000; discount = 0; shippingFee = 20000;
-//   và quan trọng nhất là quan hệ giữa chúng:
-//     total === subtotal - discount + shippingFee
-//   Viết dòng cuối theo đúng dạng quan hệ đó, đừng viết số cứng: khi ca
-//   thất bại, thông báo sẽ cho thấy ngay phép tính nào bị sai.
+// Ca 7: FR-05.2 — kiểm công thức tổng tiền, thành viên THUONG, zone nội thành.
+// Sản phẩm 4: Balo laptop 350.000đ; shippingFee nội thành = 20.000đ.
+// Lỗi cài sẵn: src/server.js tính total = subtotal - discount (bỏ + shippingFee)
+// nên total thực tế = 350000 thay vì 370000. Ca này ĐỎ — ghi nhận bug.
 // ---------------------------------------------------------------
+test('FR-05.2 — tổng tiền đơn hàng = tạm tính - giảm giá + phí vận chuyển (THUONG, nội thành)', async ({ request }) => {
+  // Thêm sản phẩm 4 (350.000đ) vào giỏ
+  await request.post('/api/cart', { ...kemToken(), data: { productId: 4, qty: 1 } });
+
+  // Tạo đơn hàng với zone nội thành
+  const res = await request.post('/api/orders', { ...kemToken(), data: { zone: 'noi-thanh' } });
+  expect(res.status()).toBe(201);
+
+  // POST /api/orders trả về object order trực tiếp (không bọc trong { order: ... })
+  const don = await res.json();
+  // Kiểm từng thành phần (mức b)
+  expect(don.subtotal).toBe(350000);
+  expect(don.discount).toBe(0);
+  expect(don.shippingFee).toBe(20000);
+  // Kiểm quan hệ nghiệp vụ — KHÔNG dùng số cứng (mức c)
+  expect(don.total).toBe(don.subtotal - don.discount + don.shippingFee);
+});
 
 // ---------------------------------------------------------------
-// TODO (8): FR-05.3 + FR-04.3 — thành viên VIP.
-//   Đăng nhập 'vip@ntu.edu.vn' bằng dangNhap(request, 'vip@ntu.edu.vn'),
-//   dùng kemToken(tokenVip) cho mọi lời gọi. Thêm sản phẩm 4, tạo đơn với
-//   zone 'ngoai-thanh'. Kiểm discount = 5% của tạm tính, shippingFee = 0,
-//   và total đúng theo công thức.
-//   Lưu ý khi phân tích kết quả: ca này có thể XANH trong khi TODO (7) ĐỎ.
-//   Hãy giải thích hiện tượng đó trong báo cáo.
+// Ca 8: FR-05.3 + FR-04.3 — thành viên VIP, zone ngoại thành.
+// Sản phẩm 4: 350.000đ. VIP: discount = 5%, shippingFee = 0 (miễn phí mọi khu vực).
+// Ca này có thể XANH vì shippingFee=0, nên lỗi bỏ + shippingFee không ảnh hưởng.
 // ---------------------------------------------------------------
+test('FR-05.3 + FR-04.3 — đơn hàng VIP: giảm 5%, miễn phí vận chuyển, total đúng công thức', async ({ request }) => {
+  const tokenVip = await dangNhap(request, 'vip@ntu.edu.vn');
+
+  // VIP thêm sản phẩm 4 vào giỏ
+  await request.post('/api/cart', { ...kemToken(tokenVip), data: { productId: 4, qty: 1 } });
+
+  // Tạo đơn với zone ngoại thành — VIP được miễn phí vận chuyển ở mọi khu vực
+  const res = await request.post('/api/orders', { ...kemToken(tokenVip), data: { zone: 'ngoai-thanh' } });
+  expect(res.status()).toBe(201);
+
+  // POST /api/orders trả về object order trực tiếp (không bọc trong { order: ... })
+  const don = await res.json();
+  // Kiểm thành phần: discount = 5% tạm tính, shippingFee = 0
+  expect(don.subtotal).toBe(350000);
+  expect(don.discount).toBe(350000 * 0.05); // 17500
+  expect(don.shippingFee).toBe(0);
+  // Kiểm quan hệ nghiệp vụ (FR-05.2)
+  expect(don.total).toBe(don.subtotal - don.discount + don.shippingFee);
+});
 
 // ---------------------------------------------------------------
-// TODO (9): FR-05.5 — hủy một đơn hàng KHÔNG tồn tại.
-//   DELETE /api/orders/9999 phải trả về 404.
+// Ca 9: FR-05.5 — hủy một đơn hàng KHÔNG tồn tại.
 // ---------------------------------------------------------------
+test('FR-05.5 — hủy đơn hàng không tồn tại trả về 404', async ({ request }) => {
+  const res = await request.delete('/api/orders/9999', kemToken());
+
+  expect(res.status()).toBe(404);
+  expect((await res.json()).message).toContain('Không tìm thấy');
+});
 
 // ---------------------------------------------------------------
-// TODO (10): FR-05.5 — hủy LẠI một đơn đã hủy.
-//   Tạo đơn, hủy lần một (phải được 200), hủy lần hai phải trả về 409.
+// Ca 10: FR-05.5 — hủy LẠI một đơn đã hủy phải trả về 409.
 // ---------------------------------------------------------------
+test('FR-05.5 — hủy lại đơn hàng đã hủy trả về 409', async ({ request }) => {
+  // Tạo đơn hàng trước
+  await request.post('/api/cart', { ...kemToken(), data: { productId: 3, qty: 1 } });
+  const taoRes = await request.post('/api/orders', { ...kemToken(), data: { zone: 'noi-thanh' } });
+  expect(taoRes.status()).toBe(201);
+  // POST /api/orders trả về object order trực tiếp
+  const donId = (await taoRes.json()).id;
+
+  // Hủy lần một — phải được 200
+  const huyLan1 = await request.delete(`/api/orders/${donId}`, kemToken());
+  expect(huyLan1.status()).toBe(200);
+
+  // Hủy lần hai — phải trả về 409
+  const huyLan2 = await request.delete(`/api/orders/${donId}`, kemToken());
+  expect(huyLan2.status()).toBe(409);
+});
 
 // ---------------------------------------------------------------
-// TODO (11): FR-06.5 và FR-06.6 — bộ lọc sản phẩm. Viết hai ca:
-//   (a) GET /api/products?sapXep=gia-giam — danh sách trả về phải được
-//       sắp xếp giảm dần theo price. Cách kiểm không phụ thuộc dữ liệu:
-//       so mảng giá với chính nó sau khi sắp xếp giảm dần.
-//   (b) GET /api/products?conHang=co — danh sách không rỗng, và MỌI phần
-//       tử phải có stock > 0. Dùng vòng lặp để kiểm từng phần tử.
+// Ca 11: FR-06.5 và FR-06.6 — bộ lọc sản phẩm.
 // ---------------------------------------------------------------
+test('FR-06.5 — sapXep=gia-giam: danh sách phải sắp xếp giảm dần theo giá', async ({ request }) => {
+  const res = await request.get('/api/products?sapXep=gia-giam');
+
+  expect(res.status()).toBe(200);
+  // GET /api/products trả về array trực tiếp (không bọc trong { products: ... })
+  const products = await res.json();
+  const prices = products.map((p) => p.price);
+  // So mảng giá với chính nó sau khi sắp xếp giảm dần — cách kiểm không phụ thuộc dữ liệu
+  const expected = [...prices].sort((a, b) => b - a);
+  expect(prices).toEqual(expected);
+});
+
+test('FR-06.6 — conHang=co: tất cả sản phẩm phải có stock > 0', async ({ request }) => {
+  const res = await request.get('/api/products?conHang=co');
+
+  expect(res.status()).toBe(200);
+  // GET /api/products trả về array trực tiếp (không bọc trong { products: ... })
+  const products = await res.json();
+  expect(products.length).toBeGreaterThan(0);
+  // Mọi phần tử phải có stock > 0
+  for (const p of products) {
+    expect(p.stock).toBeGreaterThan(0);
+  }
+});
 
 // ---------------------------------------------------------------
-// TODO (12): FR-06.7 — tổ hợp nhiều tiêu chí trong một lời gọi.
-//   GET /api/products?danhMuc=do-dung-hoc-tap&khoangGia=duoi-100k
-//   Kiểm danh sách tên sản phẩm trả về đúng bằng tập mong đợi suy ra từ
-//   dữ liệu mẫu trong SRS v1.2. Sắp xếp tên trước khi so để ca không phụ
-//   thuộc thứ tự trả về.
+// Ca 12: FR-06.7 — tổ hợp nhiều tiêu chí trong một lời gọi.
+// Danh mục do-dung-hoc-tap + giá dưới 100k:
+//   - Sổ tay sinh viên (50.000đ, id=3)
+//   - Bút ký NTU (35.000đ, id=6)
 // ---------------------------------------------------------------
+test('FR-06.7 — lọc đồng thời danh mục do-dung-hoc-tap và giá duoi-100k', async ({ request }) => {
+  const res = await request.get('/api/products?danhMuc=do-dung-hoc-tap&khoangGia=duoi-100k');
 
-// Dòng dưới chỉ để file khung chạy được; xóa nó khi đã làm xong các TODO.
-test('TODO: thay khối này bằng các ca ở TODO (5) đến TODO (12)', async ({ request }) => {
-  expect(typeof dangNhap).toBe('function');
-  expect((await request.get('/api/products')).status()).toBe(200);
+  expect(res.status()).toBe(200);
+  // GET /api/products trả về array trực tiếp (không bọc trong { products: ... })
+  const products = await res.json();
+  const tenSanPham = products.map((p) => p.name).sort();
+  // Suy từ dữ liệu mẫu trong SRS v1.2: id=3 (50k) và id=6 (35k)
+  expect(tenSanPham).toEqual(['Bút ký NTU', 'Sổ tay sinh viên'].sort());
 });

@@ -1,8 +1,7 @@
 # BUỔI 6 — PHẦN 2
 #
-# Đây là KHUNG của một quy trình kiểm thử tự động (pipeline). Bốn bước đầu
-# đã có sẵn. Nhiệm vụ của sinh viên là hoàn thành TODO (5a) đến TODO (5e)
-# để quy trình chạy đủ bốn tầng kiểm thử và lưu lại báo cáo.
+# Đây là cấu hình quy trình kiểm thử tự động (pipeline) đầy đủ.
+# Quy trình chạy đủ bốn tầng kiểm thử và lưu lại báo cáo.
 #
 # Lưu ý quan trọng về cú pháp YAML:
 #   - thụt lề bằng DẤU CÁCH, không dùng Tab;
@@ -44,55 +43,39 @@ jobs:
         run: npm run lint
         continue-on-error: true
 
-      # -----------------------------------------------------------
-      # TODO (5a): thêm bước chạy kiểm thử đơn vị bằng `npm test`.
-      #   Đặt tên bước là "Kiểm thử đơn vị".
-      # -----------------------------------------------------------
+      # Bước chạy kiểm thử đơn vị
+      - name: Kiểm thử đơn vị
+        run: npm test
+        if: always()
 
-      # -----------------------------------------------------------
-      # TODO (5b): thêm bước cài trình duyệt cho Playwright.
-      #   Lệnh: npx playwright install --with-deps chromium
-      #   Máy ảo của GitHub không có trình duyệt sẵn, thiếu bước này thì
-      #   hai bước sau thất bại với thông báo "Executable doesn't exist".
-      #   Bước này PHẢI nằm TRƯỚC hai bước kiểm thử Playwright.
-      # -----------------------------------------------------------
+      # Bước cài trình duyệt cho Playwright — PHẢI nằm TRƯỚC hai bước Playwright.
+      # Máy ảo GitHub không có trình duyệt sẵn; thiếu bước này thì
+      # hai bước sau thất bại với thông báo "Executable doesn't exist".
+      - name: Cài trình duyệt Playwright
+        run: npx playwright install --with-deps chromium
+        if: always()
 
-      # -----------------------------------------------------------
-      # TODO (5c): thêm bước chạy kiểm thử API.
-      #   Lệnh: npx playwright test tests/api
-      #   Đặt biến môi trường để báo cáo HTML ghi vào thư mục riêng:
-      #     env:
-      #       PLAYWRIGHT_HTML_REPORT: bao-cao/api
-      #   Thiếu biến này, bước 5d sẽ ghi đè báo cáo của bước 5c.
-      # -----------------------------------------------------------
+      # Bước chạy kiểm thử API
+      - name: Kiểm thử API
+        run: npx playwright test tests/api
+        if: always()
+        env:
+          PLAYWRIGHT_HTML_REPORT: bao-cao/api
 
-      # -----------------------------------------------------------
-      # TODO (5d): thêm bước chạy kiểm thử đầu cuối.
-      #   Lệnh: npx playwright test tests/e2e
-      #   Báo cáo ghi vào bao-cao/e2e theo cùng cách như trên.
-      # -----------------------------------------------------------
+      # Bước chạy kiểm thử đầu cuối
+      - name: Kiểm thử đầu cuối
+        run: npx playwright test tests/e2e
+        if: always()
+        env:
+          PLAYWRIGHT_HTML_REPORT: bao-cao/e2e
 
-      # -----------------------------------------------------------
-      # TODO (5e): thêm bước tải báo cáo lên GitHub.
-      #   uses: actions/upload-artifact@v4
-      #   name: bao-cao-kiem-thu
-      #   path: bao-cao/
-      #   retention-days: 7
-      # -----------------------------------------------------------
-
-      # -----------------------------------------------------------
-      # TODO (5f) — QUAN TRỌNG: MiniShop đang có lỗi thật, nên các bước
-      #   kiểm thử sẽ ĐỎ. Theo mặc định, GitHub Actions DỪNG job ngay khi
-      #   một bước thất bại, nên nếu để nguyên thì bước 5b, 5c, 5d, 5e
-      #   không bao giờ chạy và ta không có báo cáo nào.
-      #
-      #   Thêm `if: always()` vào các bước 5b, 5c, 5d và 5e để chúng vẫn
-      #   chạy sau khi một bước trước đó thất bại.
-      #
-      #   Chú ý phân biệt hai thứ:
-      #     - `continue-on-error: true` khiến bước thất bại được coi như
-      #       thành công, nên job vẫn XANH — che mất lỗi;
-      #     - `if: always()` khiến bước vẫn chạy, nhưng job vẫn ĐỎ — vừa
-      #       có đủ báo cáo, vừa giữ đúng trạng thái thật.
-      #   Với các bước kiểm thử, dùng `if: always()`.
-      # -----------------------------------------------------------
+      # Bước tải báo cáo lên GitHub
+      # if: always() để bước này vẫn chạy dù các bước kiểm thử thất bại,
+      # giữ đúng trạng thái thật (job ĐỎ) nhưng vẫn có hiện vật để tra lại.
+      - name: Tải báo cáo kiểm thử lên GitHub
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bao-cao-kiem-thu
+          path: bao-cao/
+          retention-days: 7
