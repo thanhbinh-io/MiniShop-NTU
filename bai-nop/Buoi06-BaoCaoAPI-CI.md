@@ -127,18 +127,16 @@ Ca ở TODO (7) và ca ở TODO (8) đều kiểm công thức `total = subtotal
 
 ### 5.2. Số liệu lần chạy trên nhánh `buoi-06`
 
-*(Sinh viên điền số liệu chính xác từ trang GitHub Actions sau khi push nhánh `buoi-06`)*
-
 | Mục | Giá trị |
 |---|---|
-| Đường dẫn tới lần chạy | *(Điền URL Actions run của nhánh buoi-06 sau khi push)* |
-| Tổng thời gian chạy | ~2m 30s |
-| Thời gian bước cài thư viện | ~20s |
-| Thời gian bước cài trình duyệt | ~45s |
-| Thời gian bước kiểm thử đơn vị | ~5s |
-| Thời gian bước kiểm thử API | ~15s |
-| Thời gian bước kiểm thử đầu cuối | ~50s |
-| Trạng thái cuối cùng của job | Thất bại (Đỏ) — đúng với thực tế sản phẩm còn lỗi |
+| Đường dẫn tới lần chạy | https://github.com/PhamThanhBinh2k5/sot357-65130239/actions/runs/41397766955 |
+| Tổng thời gian chạy | 1m 11s (Job kiem-thu: 1m 7s) |
+| Thời gian bước cài thư viện | 3s |
+| Thời gian bước cài trình duyệt | 24s |
+| Thời gian bước kiểm thử đơn vị | 1s |
+| Thời gian bước kiểm thử API | 10s |
+| Thời gian bước kiểm thử đầu cuối | 25s |
+| Trạng thái cuối cùng của job | Failure (Đỏ) — đúng với thực tế sản phẩm còn lỗi |
 | Số ca thất bại: đơn vị / API / đầu cuối | 0 / 5 / 3 |
 
 **5.3.** Mọi bước đều đã chạy hay có bước bị bỏ qua? Nếu có, vì sao?
@@ -161,7 +159,9 @@ Ca ở TODO (7) và ca ở TODO (8) đều kiểm công thức `total = subtotal
 | Nếu bỏ biến `PLAYWRIGHT_HTML_REPORT` thì điều gì xảy ra | Playwright sẽ mặc định ghi báo cáo vào cùng một thư mục `playwright-report/`; khi đó bước kiểm thử E2E chạy sau sẽ ghi đè và xóa sạch toàn bộ báo cáo của bước kiểm thử API trước đó |
 | Vì sao bước tải lên phải có `if: always()` | Mặc định GitHub Actions sẽ hủy bỏ tất cả các bước tiếp theo khi có một bước bị thất bại. Do sản phẩm đang có ca kiểm thử đỏ (exit code 1), nếu không có `if: always()`, bước upload-artifact sẽ bị skip và kiểm thử viên không thể tải được báo cáo để phân tích |
 
-Ảnh chụp kết quả Actions: lưu vào `bai-nop/hinh/actions-buoi06.png` và dẫn liên kết tại đây: `![GitHub Actions Run](hinh/actions-buoi06.png)`.
+Ảnh chụp toàn bộ kết quả Actions và gói hiện vật tải lên:
+
+![GitHub Actions Run](hinh/actions-buoi06.png)
 
 ## 7. Đường mốc đỏ đã biết
 
